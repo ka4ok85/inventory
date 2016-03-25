@@ -14,14 +14,19 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Persistable;
 
+import com.example.repository.ProductlocationRepository;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 @Table(name = "products")
 public class Product implements Persistable<Long> {
 
+    @Autowired
+    @Transient
+    private ProductlocationRepository productlocationRepository;
 
     private static final long serialVersionUID = 7019159189994722047L;
 
@@ -44,11 +49,8 @@ public class Product implements Persistable<Long> {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Productinstore> productinstores = new HashSet<>();
 
-    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.product", cascade={CascadeType.PERSIST, CascadeType.MERGE})
-    //Set<Productinstore> productinstores = new HashSet<Productinstore>();
-
-    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.product", cascade={CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval=true)
-    //Set<Productlocation> productlocationes = new HashSet<Productlocation>();
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Productlocation> productlocationes = new HashSet<>();
 
     public Product() {
     }
@@ -61,7 +63,6 @@ public class Product implements Persistable<Long> {
         this.name = name;
     }
 
-
     public Set<Productinstore> getProductinstores() {
         return productinstores;
     }
@@ -70,50 +71,39 @@ public class Product implements Persistable<Long> {
         this.productinstores = productinstores;
     }
 
-
     public void addToStore(Store store, Long quantity) {
-/*
-    	Productinstore productinstore = new Productinstore(this, store);
-        productinstore.setQuantity(quantity);
-        System.out.println(quantity);
-        System.out.println(productinstore);
-        productinstores.add(productinstore);
-        //store.getProductinstores().add(productinstore);
-        System.out.println(store);
-*/
-        Productinstore productinstore = new Productinstore(this, store, quantity);
-        System.out.println(productinstore);
-        System.out.println(store);
-        productinstores.add(productinstore);
+        Productinstore existedProductinstore = null;
+        for (Productinstore productinstore : productinstores) {
+            if (productinstore.getStore().getId().equals(store.getId()) == true) {
+                existedProductinstore = productinstore;
+                break;
+            }
+        }
 
+        if (existedProductinstore == null) {
+            Productinstore productinstore = new Productinstore(this, store, quantity);
+            productinstores.add(productinstore);
+        } else {
+            existedProductinstore.setQuantity(existedProductinstore.getQuantity() + quantity);
+            productinstores.add(existedProductinstore);
+        }
     }
 
-    public void removeFromStoreAddress(Store store, Long quantity) {
-        Productinstore productinstore = new Productinstore(this, store, quantity);
+    public void removeFromStore(Store store, Long quantity) {
+        Productinstore existedProductinstore = null;
+        for (Productinstore productinstore : productinstores) {
+            if (productinstore.getStore().getId().equals(store.getId()) == true) {
+                existedProductinstore = productinstore;
+                break;
+            }
+        }
 
-System.out.println("delete in progress" + productinstore.toString());
-        store.getProductinstores().remove(productinstore);
-        productinstores.remove(productinstore);
-        //productinstore.setProduct(null);
-        //productinstore.setStore(null);
-
-/*
-    	Productinstore productinstore = new Productinstore(this, store);
-    	productinstore.setQuantity(quantity);
-System.out.println("delete in progress" + productinstore.toString());
-        store.getProductinstores().remove(productinstores);
-        productinstores.remove(productinstore);
-        productinstore.setProduct(null);
-        productinstore.setStore(null);
-*/
-
-/*
-        Productinstore existedProductinstore = getSingleProductinstore(store);
-        store.getProductinstores().remove(existedProductinstore);
-        productinstores.remove(existedProductinstore);
-        existedProductinstore.setProduct(null);
-        existedProductinstore.setStore(null);
-*/
+        if (existedProductinstore == null) {
+            // log error?
+        } else {
+            existedProductinstore.setQuantity(existedProductinstore.getQuantity() - quantity);
+            productinstores.add(existedProductinstore);
+        }
     }
 
     public Productinstore getSingleProductinstore(Store store) {
@@ -125,8 +115,7 @@ System.out.println("delete in progress" + productinstore.toString());
 
         return null;
     }
-    
-    /*
+
     public Set<Productlocation> getProductlocationes() {
         return productlocationes;
     }
@@ -134,7 +123,7 @@ System.out.println("delete in progress" + productinstore.toString());
     public void setProductlocationes(Set<Productlocation> productlocationes) {
         this.productlocationes = productlocationes;
     }
-*/
+
     public String getSku() {
         return sku;
     }
@@ -171,5 +160,34 @@ System.out.println("delete in progress" + productinstore.toString());
         return null == getId();
     }
 
+    public void addToLocation(Store store, Long quantity, Long shelf, Long slot) {
+System.out.println(store);
+        Productlocation existedProductlocation = productlocationRepository.findByStoreIdAndShelfAndSlot(store.getId(), shelf, slot);
+System.out.println(existedProductlocation);
+        
+        //for (Productlocation productlocation : productlocationes) {
+            //if (
+                    //productlocation.getStorelocation().
+        			//)
+        	
+        //}
+/*
+        Productinstore existedProductinstore = null;
+        for (Productinstore productinstore : productinstores) {
+            if (productinstore.getStore().getId().equals(store.getId()) == true) {
+                existedProductinstore = productinstore;
+                break;
+            }
+        }
+
+        if (existedProductinstore == null) {
+            Productinstore productinstore = new Productinstore(this, store, quantity);
+            productinstores.add(productinstore);
+        } else {
+            existedProductinstore.setQuantity(existedProductinstore.getQuantity() + quantity);
+            productinstores.add(existedProductinstore);
+        } 
+ */
+    }
 
 }

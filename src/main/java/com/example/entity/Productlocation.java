@@ -1,25 +1,15 @@
 package com.example.entity;
 
-import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
-import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
-import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -28,10 +18,14 @@ import org.springframework.data.domain.Persistable;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
-@Table(name = "products_in_stores")
-public class Productinstore implements Persistable<Long> {
+@Table(name = "product_locations")
 
-    private static final long serialVersionUID = -2245681212129182920L;
+//@NamedQuery(name = "Productlocation.findByStoreIdAndShelfAndSlot",
+    //query = "select pl from Productlocation pl where pl.id = ?1")
+
+public class Productlocation implements Persistable<Long> {
+
+    private static final long serialVersionUID = -2245681212129182940L;
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -42,22 +36,22 @@ public class Productinstore implements Persistable<Long> {
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name="store_id")
-    private Store store;
+    @JoinColumn(name="store_location_id")
+    private Storelocation storelocation;
 
-    @JsonView(com.example.entity.Productinstore.class)
+    @JsonView(com.example.entity.Productlocation.class)
     @Column(name = "quantity", nullable = false)
     private Long quantity;
 
-    public Productinstore() {
+    public Productlocation() {
     }
-
-    public Productinstore(Product product, Store store, Long quantity) {
+/*
+    public Productlocation(Product product, Storelocation storelocation, Long quantity) {
         this.product = product;
-        this.store = store;
+        this.storelocation = storelocation;
         this.quantity = quantity;
     }
-
+*/
     public Long getId() {
         return id;
     }
@@ -74,12 +68,12 @@ public class Productinstore implements Persistable<Long> {
         this.product = product;
     }
 
-    public Store getStore() {
-        return store;
+    public Storelocation getStorelocation() {
+        return storelocation;
     }
 
-    public void setStore(Store store) {
-        this.store = store;
+    public void setStorelocation(Storelocation storelocation) {
+        this.storelocation = storelocation;
     }
 
     public Long getQuantity() {
@@ -92,7 +86,7 @@ public class Productinstore implements Persistable<Long> {
 
     @Override
     public String toString() {
-        return "Productinstore [quantity=" + quantity + "]";
+        return "Productlocation [quantity=" + quantity + "]";
     }
 
     @Override
@@ -109,14 +103,14 @@ public class Productinstore implements Persistable<Long> {
         if ( o == null || getClass() != o.getClass() ) {
             return false;
         }
-        Productinstore that = (Productinstore) o;
+        Productlocation that = (Productlocation) o;
         return Objects.equals(product, that.product) &&
                Objects.equals(quantity, that.quantity) &&
-               Objects.equals(store, that.store);
+               Objects.equals(storelocation, that.storelocation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(product, store, quantity);
+        return Objects.hash(product, storelocation, quantity);
     }
 }

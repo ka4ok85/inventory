@@ -12,7 +12,7 @@ import com.example.repository.StoreRepository;
 
 @ComponentScan
 @Service
-public class Productstore {
+public class ProductlocationService {
 
     @Autowired
     private ProductRepository productRepository;
@@ -20,10 +20,10 @@ public class Productstore {
     @Autowired
     private StoreRepository storeRepository;
 
-    public Productstore() {
+    public ProductlocationService() {
     }
 
-    public Product scanProduct(Long productId, Long storeId, Long quantity) {
+    public Product scanProduct(Long productId, Long storeId, Long quantity, Long shelf, Long slot) {
         Product product = productRepository.findOne(productId);
         if (product == null) {
             throw new NotFoundException(productId.toString());
@@ -34,12 +34,12 @@ public class Productstore {
             throw new NotFoundException(storeId.toString());
         }
 
-        product.addToStore(store, quantity);
+        product.addToLocation(store, quantity, shelf, slot);
         productRepository.save(product);
 
         return product;
     }
-
+/*
     public Product sellProduct(Long productId, Long storeId, Long quantity) {
         Product product = productRepository.findOne(productId);
         if (product == null) {
@@ -56,4 +56,5 @@ public class Productstore {
 
         return product;
     }
+*/
 }

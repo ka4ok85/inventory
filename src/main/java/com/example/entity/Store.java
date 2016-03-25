@@ -36,12 +36,11 @@ public class Store implements Persistable<Long> {
     @Column(name = "address", unique = false, nullable = false, length = 255)
     private String address;
 
-    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "store", cascade={CascadeType.PERSIST, CascadeType.MERGE})
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Productinstore> productinstores = new HashSet<Productinstore>();
 
-    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.store", cascade={CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval=true)
-    //Set<Productlocation> productlocationes = new HashSet<Productlocation>();
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Storelocation> storelocationes = new HashSet<Storelocation>();
 
     public Store() {
     }
@@ -58,15 +57,14 @@ public class Store implements Persistable<Long> {
         return productinstores;
     }
 
-/*
-    public Set<Productlocation> getProductlocationes() {
-        return productlocationes;
+    public Set<Storelocation> getStorelocationes() {
+        return storelocationes;
     }
 
-    public void setProductlocationes(Set<Productlocation> productlocationes) {
-        this.productlocationes = productlocationes;
+    public void setStorelocationes(Set<Storelocation> storelocationes) {
+        this.storelocationes = storelocationes;
     }
-*/
+
     public String getAddress() {
         return address;
     }
@@ -94,5 +92,4 @@ public class Store implements Persistable<Long> {
     public boolean isNew() {
         return null == getId();
     }
-
 }

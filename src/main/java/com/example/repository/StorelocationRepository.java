@@ -2,11 +2,13 @@ package com.example.repository;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+
 import com.example.entity.Store;
+import com.example.entity.Storelocation;
 
 @Repository
-public interface StoreRepository extends CrudRepository<Store, Long> {
+public interface StorelocationRepository extends CrudRepository<Storelocation, Long> {
 
-    Store findByName(String name);
+    Storelocation findByStore(Store store);
 }
 
