@@ -10,5 +10,6 @@ import com.example.entity.Storelocation;
 public interface StorelocationRepository extends CrudRepository<Storelocation, Long> {
 
     Storelocation findByStore(Store store);
+    Storelocation findByStoreAndShelfAndSlot(Store store, Long shelf, Long slot);
 }
 

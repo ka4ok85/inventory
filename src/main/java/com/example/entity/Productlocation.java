@@ -9,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -19,9 +18,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 @Table(name = "product_locations")
-
-//@NamedQuery(name = "Productlocation.findByStoreIdAndShelfAndSlot",
-    //query = "select pl from Productlocation pl where pl.id = ?1")
 
 public class Productlocation implements Persistable<Long> {
 
@@ -45,13 +41,13 @@ public class Productlocation implements Persistable<Long> {
 
     public Productlocation() {
     }
-/*
+
     public Productlocation(Product product, Storelocation storelocation, Long quantity) {
         this.product = product;
         this.storelocation = storelocation;
         this.quantity = quantity;
     }
-*/
+
     public Long getId() {
         return id;
     }

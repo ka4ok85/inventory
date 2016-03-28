@@ -6,7 +6,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,19 +13,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Persistable;
-
-import com.example.repository.ProductlocationRepository;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 @Table(name = "products")
 public class Product implements Persistable<Long> {
-
-    @Autowired
-    @Transient
-    private ProductlocationRepository productlocationRepository;
 
     private static final long serialVersionUID = 7019159189994722047L;
 
@@ -71,51 +63,6 @@ public class Product implements Persistable<Long> {
         this.productinstores = productinstores;
     }
 
-    public void addToStore(Store store, Long quantity) {
-        Productinstore existedProductinstore = null;
-        for (Productinstore productinstore : productinstores) {
-            if (productinstore.getStore().getId().equals(store.getId()) == true) {
-                existedProductinstore = productinstore;
-                break;
-            }
-        }
-
-        if (existedProductinstore == null) {
-            Productinstore productinstore = new Productinstore(this, store, quantity);
-            productinstores.add(productinstore);
-        } else {
-            existedProductinstore.setQuantity(existedProductinstore.getQuantity() + quantity);
-            productinstores.add(existedProductinstore);
-        }
-    }
-
-    public void removeFromStore(Store store, Long quantity) {
-        Productinstore existedProductinstore = null;
-        for (Productinstore productinstore : productinstores) {
-            if (productinstore.getStore().getId().equals(store.getId()) == true) {
-                existedProductinstore = productinstore;
-                break;
-            }
-        }
-
-        if (existedProductinstore == null) {
-            // log error?
-        } else {
-            existedProductinstore.setQuantity(existedProductinstore.getQuantity() - quantity);
-            productinstores.add(existedProductinstore);
-        }
-    }
-
-    public Productinstore getSingleProductinstore(Store store) {
-        for (Productinstore productinstore : productinstores) {
-            if (productinstore.getStore().getId().equals(store.getId()) == true) {
-                return productinstore;
-            }
-        }
-
-        return null;
-    }
-
     public Set<Productlocation> getProductlocationes() {
         return productlocationes;
     }
@@ -140,6 +87,16 @@ public class Product implements Persistable<Long> {
         this.quantity = quantity;
     }
 
+    public Productinstore getSingleProductinstore(Store store) {
+        for (Productinstore productinstore : productinstores) {
+            if (productinstore.getStore().getId().equals(store.getId()) == true) {
+                return productinstore;
+            }
+        }
+
+        return null;
+    }
+
     @Override
     public String toString() {
         return "Product [name=" + name + ", sku=" + sku + ", quantity=" + quantity + "]";
@@ -158,36 +115,6 @@ public class Product implements Persistable<Long> {
     @Transient
     public boolean isNew() {
         return null == getId();
-    }
-
-    public void addToLocation(Store store, Long quantity, Long shelf, Long slot) {
-System.out.println(store);
-        Productlocation existedProductlocation = productlocationRepository.findByStoreIdAndShelfAndSlot(store.getId(), shelf, slot);
-System.out.println(existedProductlocation);
-        
-        //for (Productlocation productlocation : productlocationes) {
-            //if (
-                    //productlocation.getStorelocation().
-        			//)
-        	
-        //}
-/*
-        Productinstore existedProductinstore = null;
-        for (Productinstore productinstore : productinstores) {
-            if (productinstore.getStore().getId().equals(store.getId()) == true) {
-                existedProductinstore = productinstore;
-                break;
-            }
-        }
-
-        if (existedProductinstore == null) {
-            Productinstore productinstore = new Productinstore(this, store, quantity);
-            productinstores.add(productinstore);
-        } else {
-            existedProductinstore.setQuantity(existedProductinstore.getQuantity() + quantity);
-            productinstores.add(existedProductinstore);
-        } 
- */
     }
 
 }

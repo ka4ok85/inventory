@@ -1,10 +1,6 @@
 package com.example.rest;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,16 +8,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Product;
-import com.example.entity.Productinstore;
 import com.example.entity.Store;
 import com.example.entity.Storelocation;
-import com.example.repository.ProductlocationRepository;
 import com.example.repository.StoreRepository;
 import com.example.repository.StorelocationRepository;
 import com.example.service.ProductService;
 import com.example.service.ProductlocationService;
-//import com.example.entity.Productlocation;
-//import com.example.service.Productlocationservice;
 import com.example.service.Productstore;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -43,16 +35,13 @@ public class ProductController {
     @Autowired
     private StorelocationRepository storelocationRepository;
 
-    @Autowired
-    private ProductlocationRepository productlocationRepository;
-
     @RequestMapping(value = "/api/sellProduct/{productId}/{storeId}/{quantity}/{shelf}/{slot}", method = RequestMethod.GET, produces = "application/json")
     @JsonView(com.example.entity.Productinstore.class)
     @Transactional
     public Boolean sellProduct(@PathVariable("productId") Long productId, @PathVariable("storeId") Long storeId, @PathVariable("quantity") Long quantity, @PathVariable("shelf") Long shelf, @PathVariable("slot") Long slot) {
-        //productlocationservice.sellProduct(productId, storeId, shelf, slot);
         productstore.sellProduct(productId, storeId, quantity);
         productService.sellProduct(productId, quantity);
+        productlocationService.sellProduct(productId, storeId, quantity, shelf, slot);
         return true;
     }
 
@@ -88,5 +77,4 @@ public class ProductController {
         return storelocation;
     }
 
-    
 }

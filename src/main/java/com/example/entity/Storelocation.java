@@ -51,14 +51,14 @@ public class Storelocation implements Persistable<Long> {
 
     public Storelocation() {
     }
-/*
+
     public Storelocation(Store store, Long slot, Long shelf, String barcode) {
         this.store = store;
         this.slot = slot;
         this.shelf = shelf;
         this.barcode = barcode;
     }
-*/
+
     public Long getId() {
         return id;
     }

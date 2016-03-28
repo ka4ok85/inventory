@@ -1,11 +1,14 @@
 package com.example.service;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
 import com.example.NotFoundException;
 import com.example.entity.Product;
+import com.example.entity.Productinstore;
 import com.example.entity.Store;
 import com.example.repository.ProductRepository;
 import com.example.repository.StoreRepository;
@@ -34,7 +37,23 @@ public class Productstore {
             throw new NotFoundException(storeId.toString());
         }
 
-        product.addToStore(store, quantity);
+        Productinstore existedProductinstore = null;
+        for (Productinstore productinstore : product.getProductinstores()) {
+            if (productinstore.getStore().getId().equals(store.getId()) == true) {
+                existedProductinstore = productinstore;
+                break;
+            }
+        }
+
+        if (existedProductinstore == null) {
+            Productinstore productinstore = new Productinstore(product, store, quantity);
+            Set<Productinstore> productinstores = product.getProductinstores();
+            productinstores.add(productinstore);
+            product.setProductinstores(productinstores);
+        } else {
+            existedProductinstore.setQuantity(quantity + existedProductinstore.getQuantity());
+        }
+
         productRepository.save(product);
 
         return product;
@@ -51,7 +70,24 @@ public class Productstore {
             throw new NotFoundException(storeId.toString());
         }
 
-        product.removeFromStore(store, quantity);
+        Productinstore existedProductinstore = null;
+        for (Productinstore productinstore : product.getProductinstores()) {
+            if (productinstore.getStore().getId().equals(store.getId()) == true) {
+                existedProductinstore = productinstore;
+                break;
+            }
+        }
+
+        if (existedProductinstore == null) {
+            throw new NotFoundException(productId.toString() + "-" + storeId.toString());
+        } else {
+            if (existedProductinstore.getQuantity() < quantity) {
+                throw new NotFoundException("Not enough " + productId.toString());
+            } else {
+                existedProductinstore.setQuantity(existedProductinstore.getQuantity() - quantity);
+            }
+        }
+
         productRepository.save(product);
 
         return product;
