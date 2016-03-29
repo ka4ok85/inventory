@@ -101,4 +101,15 @@ public class ProductlocationService {
         return product;
     }
 
+    public Storelocation addStorelocation(Store store, Long shelf, Long slot, String barcode) {
+        Storelocation storelocation = new Storelocation();
+        storelocation.setStore(store);
+        storelocation.setShelf(shelf);
+        storelocation.setSlot(slot);
+        storelocation.setBarcode(barcode);
+
+        storelocationRepository.save(storelocation);
+
+        return storelocation;
+    }
 }

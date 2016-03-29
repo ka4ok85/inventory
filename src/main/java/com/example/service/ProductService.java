@@ -45,4 +45,14 @@ public class ProductService {
 
         return product;
     }
+
+    public Product addProduct(String sku, String name) {
+        Product product = new Product();
+        product.setSku(sku);
+        product.setName(name);
+        product.setQuantity((long) 0);
+        productRepository.save(product);
+
+        return product;
+    }
 }

@@ -1,5 +1,7 @@
 package com.example.rest;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -75,6 +77,43 @@ public class ProductController {
         Storelocation storelocation = storelocationRepository.findByStore(store);
 
         return storelocation;
+    }
+
+    @RequestMapping(value = "/api/addData", method = RequestMethod.GET, produces = "application/json")
+    @JsonView(com.example.entity.Storelocation.class)
+    @Transactional
+    public int addTestData() {
+
+        int newProductsCount = 10;
+        int newProductsCountAdded = 0;
+        Product newProduct;
+        String sku;
+        String name;
+        ArrayList<Product> products = new ArrayList<>();
+        for (int i = 0; i < newProductsCount; i++) {
+            sku = "sku_" + i;
+            name = "product name" + i;
+            newProduct = productService.addProduct(sku, name);
+            products.add(newProduct);
+        }
+
+        Store store = storeRepository.findByName("Branch Store #3");
+        int newStorelocationsCount = 10;
+        int newStorelocationsCountAdded = 0;
+        Long shelf;
+        Long slot = (long) 1;
+        String barcode;
+        ArrayList<Storelocation> storelocationes = new ArrayList<>();
+        for (int i = 0; i < newStorelocationsCount; i++) {
+            shelf = (long) (i+1);
+            barcode = "barcode" + store.getId() + "_" + shelf + "_" + slot;
+            Storelocation storelocation = productlocationService.addStorelocation(store, shelf, slot, barcode);
+            storelocationes.add(storelocation);
+        }
+
+
+        return newProductsCountAdded;
+
     }
 
 }
