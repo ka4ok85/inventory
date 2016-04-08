@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Product;
+import com.example.entity.Productlocation;
 import com.example.entity.Store;
 import com.example.entity.Storelocation;
 import com.example.repository.StoreRepository;
@@ -58,6 +59,14 @@ public class ProductController {
         return productAddedToStore;
     }
 
+    @RequestMapping(value = "/api/findProductLocation/{productId}/{storeId}", method = RequestMethod.GET, produces = "application/json")
+    @JsonView(com.example.entity.Productlocation.class)
+    @Transactional
+    public Productlocation findProductLocation(@PathVariable("productId") Long productId, @PathVariable("storeId") Long storeId) {
+        Productlocation productlocation = productlocationService.findProduct(productId, storeId);
+
+        return productlocation;
+    }
 
     @RequestMapping(value = "/api/test", method = RequestMethod.GET, produces = "application/json")
     @JsonView(com.example.entity.Store.class)

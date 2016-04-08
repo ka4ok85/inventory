@@ -9,5 +9,7 @@ import com.example.entity.Productlocation;
 public interface ProductlocationRepository extends CrudRepository<Productlocation, Long> {
 
     Productlocation findByProductAndStorelocation(Long product, Long storelocation);
+    Productlocation findByProductAndStore(Long product, Long store);
+
 }
 

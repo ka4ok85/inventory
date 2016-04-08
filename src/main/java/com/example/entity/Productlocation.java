@@ -31,6 +31,9 @@ public class Productlocation implements Persistable<Long> {
     @Column(name="store_location_id")
     private Long storelocation;
 
+    @Column(name="store_id")
+    private Long store;
+
     @JsonView(com.example.entity.Productlocation.class)
     @Column(name = "quantity", nullable = false)
     private Long quantity;
@@ -38,9 +41,10 @@ public class Productlocation implements Persistable<Long> {
     public Productlocation() {
     }
 
-    public Productlocation(Long product, Long storelocation, Long quantity) {
+    public Productlocation(Long product, Long storelocation, Long store, Long quantity) {
         this.product = product;
         this.storelocation = storelocation;
+        this.store = store;
         this.quantity = quantity;
     }
 
@@ -66,6 +70,14 @@ public class Productlocation implements Persistable<Long> {
 
     public void setStorelocation(Long storelocation) {
         this.storelocation = storelocation;
+    }
+
+    public Long getStore() {
+        return store;
+    }
+
+    public void setStore(Long store) {
+        this.store = store;
     }
 
     public Long getQuantity() {
@@ -98,11 +110,12 @@ public class Productlocation implements Persistable<Long> {
         Productlocation that = (Productlocation) o;
         return Objects.equals(product, that.product) &&
                Objects.equals(quantity, that.quantity) &&
+               Objects.equals(store, that.store) &&
                Objects.equals(storelocation, that.storelocation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(product, storelocation, quantity);
+        return Objects.hash(product, storelocation, store, quantity);
     }
 }

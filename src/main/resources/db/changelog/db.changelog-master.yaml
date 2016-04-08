@@ -180,3 +180,23 @@ databaseChangeLog:
             columnNames: product_id, store_location_id
             constraintName: product_location_unique
             tableName: product_locations
+  - changeSet:
+      id: 2
+      author: evgeny
+      changes:
+#      - addColumn:
+#          columns:
+#          - column:
+#              name: store_id
+#              type: int(11)
+#              constraints:
+#                nullable: false
+#          tableName: product_locations
+      - addForeignKeyConstraint:
+          baseColumnNames: store_id
+          baseTableName: product_locations
+          constraintName: fk_store_4
+          onDelete: CASCADE
+          onUpdate: RESTRICT
+          referencedColumnNames: id
+          referencedTableName: stores
