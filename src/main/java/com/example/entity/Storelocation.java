@@ -11,7 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -30,9 +29,8 @@ public class Storelocation implements Persistable<Long> {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name="store_id")
-    private Store store;
+    @Column(name="store_id")
+    private Long store;
 
     @JsonView(com.example.entity.Storelocation.class)
     @Column(name = "slot", nullable = false)
@@ -46,13 +44,14 @@ public class Storelocation implements Persistable<Long> {
     @Column(name = "barcode", nullable = false)
     private String barcode;
 
-    @OneToMany(mappedBy = "storelocation", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name="store_location_id")
     private Set<Productlocation> productlocationes = new HashSet<Productlocation>();
 
     public Storelocation() {
     }
 
-    public Storelocation(Store store, Long slot, Long shelf, String barcode) {
+    public Storelocation(Long store, Long slot, Long shelf, String barcode) {
         this.store = store;
         this.slot = slot;
         this.shelf = shelf;
@@ -67,11 +66,11 @@ public class Storelocation implements Persistable<Long> {
         this.id = id;
     }
 
-    public Store getStore() {
+    public Long getStore() {
         return store;
     }
 
-    public void setStore(Store store) {
+    public void setStore(Long store) {
         this.store = store;
     }
 

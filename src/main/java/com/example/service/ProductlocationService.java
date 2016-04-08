@@ -46,17 +46,17 @@ public class ProductlocationService {
             throw new NotFoundException(storeId.toString());
         }
 
-        Storelocation existedStorelocation = storelocationRepository.findByStoreAndShelfAndSlot(store, shelf, slot);
+        Storelocation existedStorelocation = storelocationRepository.findByStoreAndShelfAndSlot(store.getId(), shelf, slot);
         if (existedStorelocation == null) {
             throw new NotFoundException("There is no such store location");
         }
 
         System.out.println(existedStorelocation);
-        Productlocation existedProductlocation = productlocationRepository.findByProductAndStorelocation(product, existedStorelocation);
+        Productlocation existedProductlocation = productlocationRepository.findByProductAndStorelocation(product.getId(), existedStorelocation.getId());
         if (existedProductlocation == null) {
             Productlocation productlocation = new Productlocation();
-            productlocation.setProduct(product);
-            productlocation.setStorelocation(existedStorelocation);
+            productlocation.setProduct(product.getId());
+            productlocation.setStorelocation(existedStorelocation.getId());
             productlocation.setQuantity(quantity);
             Set<Productlocation> productlocationes = product.getProductlocationes();
             productlocationes.add(productlocation);
@@ -80,12 +80,12 @@ public class ProductlocationService {
             throw new NotFoundException(storeId.toString());
         }
 
-        Storelocation existedStorelocation = storelocationRepository.findByStoreAndShelfAndSlot(store, shelf, slot);
+        Storelocation existedStorelocation = storelocationRepository.findByStoreAndShelfAndSlot(store.getId(), shelf, slot);
         if (existedStorelocation == null) {
             throw new NotFoundException("There is no such store location");
         }
 
-        Productlocation existedProductlocation = productlocationRepository.findByProductAndStorelocation(product, existedStorelocation);
+        Productlocation existedProductlocation = productlocationRepository.findByProductAndStorelocation(product.getId(), existedStorelocation.getId());
         if (existedProductlocation == null) {
             throw new NotFoundException("Productlocation not found: " + productId.toString() + "-" + storeId.toString());
         } else {
@@ -101,7 +101,7 @@ public class ProductlocationService {
         return product;
     }
 
-    public Storelocation addStorelocation(Store store, Long shelf, Long slot, String barcode) {
+    public Storelocation addStorelocation(Long store, Long shelf, Long slot, String barcode) {
         Storelocation storelocation = new Storelocation();
         storelocation.setStore(store);
         storelocation.setShelf(shelf);

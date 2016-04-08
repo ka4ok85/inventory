@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -27,13 +25,11 @@ public class Productlocation implements Persistable<Long> {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name="product_id")
-    private Product product;
+    @Column(name="product_id")
+    private Long product;
 
-    @ManyToOne
-    @JoinColumn(name="store_location_id")
-    private Storelocation storelocation;
+    @Column(name="store_location_id")
+    private Long storelocation;
 
     @JsonView(com.example.entity.Productlocation.class)
     @Column(name = "quantity", nullable = false)
@@ -42,7 +38,7 @@ public class Productlocation implements Persistable<Long> {
     public Productlocation() {
     }
 
-    public Productlocation(Product product, Storelocation storelocation, Long quantity) {
+    public Productlocation(Long product, Long storelocation, Long quantity) {
         this.product = product;
         this.storelocation = storelocation;
         this.quantity = quantity;
@@ -56,19 +52,19 @@ public class Productlocation implements Persistable<Long> {
         this.id = id;
     }
 
-    public Product getProduct() {
+    public Long getProduct() {
         return product;
     }
 
-    public void setProduct(Product product) {
+    public void setProduct(Long product) {
         this.product = product;
     }
 
-    public Storelocation getStorelocation() {
+    public Long getStorelocation() {
         return storelocation;
     }
 
-    public void setStorelocation(Storelocation storelocation) {
+    public void setStorelocation(Long storelocation) {
         this.storelocation = storelocation;
     }
 

@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -26,13 +24,11 @@ public class Productinstore implements Persistable<Long> {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name="product_id")
-    private Product product;
+    @Column(name = "product_id")
+    private Long product;
 
-    @ManyToOne
-    @JoinColumn(name="store_id")
-    private Store store;
+    @Column(name = "store_id")
+    private Long store;
 
     @JsonView(com.example.entity.Productinstore.class)
     @Column(name = "quantity", nullable = false)
@@ -41,7 +37,7 @@ public class Productinstore implements Persistable<Long> {
     public Productinstore() {
     }
 
-    public Productinstore(Product product, Store store, Long quantity) {
+    public Productinstore(Long product, Long store, Long quantity) {
         this.product = product;
         this.store = store;
         this.quantity = quantity;
@@ -55,19 +51,19 @@ public class Productinstore implements Persistable<Long> {
         this.id = id;
     }
 
-    public Product getProduct() {
+    public Long getProduct() {
         return product;
     }
 
-    public void setProduct(Product product) {
+    public void setProduct(Long product) {
         this.product = product;
     }
 
-    public Store getStore() {
+    public Long getStore() {
         return store;
     }
 
-    public void setStore(Store store) {
+    public void setStore(Long store) {
         this.store = store;
     }
 

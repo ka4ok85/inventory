@@ -11,6 +11,7 @@ import com.example.entity.Product;
 import com.example.entity.Productinstore;
 import com.example.entity.Store;
 import com.example.repository.ProductRepository;
+import com.example.repository.ProductinstoreRepository;
 import com.example.repository.StoreRepository;
 
 @ComponentScan
@@ -22,6 +23,9 @@ public class Productstore {
 
     @Autowired
     private StoreRepository storeRepository;
+    
+    @Autowired
+    private ProductinstoreRepository productinstoreRepository;
 
     public Productstore() {
     }
@@ -31,22 +35,15 @@ public class Productstore {
         if (product == null) {
             throw new NotFoundException(productId.toString());
         }
-
+        
         Store store = storeRepository.findOne(storeId);
         if (store == null) {
             throw new NotFoundException(storeId.toString());
         }
 
-        Productinstore existedProductinstore = null;
-        for (Productinstore productinstore : product.getProductinstores()) {
-            if (productinstore.getStore().getId().equals(store.getId()) == true) {
-                existedProductinstore = productinstore;
-                break;
-            }
-        }
-
+        Productinstore existedProductinstore = productinstoreRepository.findByProductAndStore(product.getId(), store.getId());
         if (existedProductinstore == null) {
-            Productinstore productinstore = new Productinstore(product, store, quantity);
+        	Productinstore productinstore = new Productinstore(product.getId(), store.getId(), quantity);
             Set<Productinstore> productinstores = product.getProductinstores();
             productinstores.add(productinstore);
             product.setProductinstores(productinstores);
@@ -70,14 +67,7 @@ public class Productstore {
             throw new NotFoundException(storeId.toString());
         }
 
-        Productinstore existedProductinstore = null;
-        for (Productinstore productinstore : product.getProductinstores()) {
-            if (productinstore.getStore().getId().equals(store.getId()) == true) {
-                existedProductinstore = productinstore;
-                break;
-            }
-        }
-
+        Productinstore existedProductinstore = productinstoreRepository.findByProductAndStore(product.getId(), store.getId());
         if (existedProductinstore == null) {
             throw new NotFoundException(productId.toString() + "-" + storeId.toString());
         } else {

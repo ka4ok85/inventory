@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -38,10 +39,12 @@ public class Product implements Persistable<Long> {
     @Column(name = "quantity", unique = false, nullable = false)
     private Long quantity;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name="product_id")
     private Set<Productinstore> productinstores = new HashSet<>();
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name="product_id")
     private Set<Productlocation> productlocationes = new HashSet<>();
 
     public Product() {
@@ -85,16 +88,6 @@ public class Product implements Persistable<Long> {
 
     public void setQuantity(Long quantity) {
         this.quantity = quantity;
-    }
-
-    public Productinstore getSingleProductinstore(Store store) {
-        for (Productinstore productinstore : productinstores) {
-            if (productinstore.getStore().getId().equals(store.getId()) == true) {
-                return productinstore;
-            }
-        }
-
-        return null;
     }
 
     @Override

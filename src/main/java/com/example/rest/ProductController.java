@@ -74,11 +74,11 @@ public class ProductController {
     @Transactional
     public Storelocation test2() {
         Store store = storeRepository.findByName("Main Store #1");
-        Storelocation storelocation = storelocationRepository.findByStore(store);
+        Storelocation storelocation = storelocationRepository.findByStore(store.getId());
 
         return storelocation;
     }
-
+/*
     @RequestMapping(value = "/api/addData", method = RequestMethod.GET, produces = "application/json")
     @JsonView(com.example.entity.Storelocation.class)
     @Transactional
@@ -115,5 +115,5 @@ public class ProductController {
         return newProductsCountAdded;
 
     }
-
+*/
 }
