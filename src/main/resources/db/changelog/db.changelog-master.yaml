@@ -184,14 +184,14 @@ databaseChangeLog:
       id: 2
       author: evgeny
       changes:
-#      - addColumn:
-#          columns:
-#          - column:
-#              name: store_id
-#              type: int(11)
-#              constraints:
-#                nullable: false
-#          tableName: product_locations
+      - addColumn:
+          columns:
+          - column:
+              name: store_id
+              type: int(11)
+              constraints:
+                nullable: false
+          tableName: product_locations
       - addForeignKeyConstraint:
           baseColumnNames: store_id
           baseTableName: product_locations
@@ -200,3 +200,130 @@ databaseChangeLog:
           onUpdate: RESTRICT
           referencedColumnNames: id
           referencedTableName: stores
+  - changeSet:
+      id: 3
+      author: evgeny
+      changes:
+        - createTable:
+            tableName: restatement_jobs
+            columns:
+              - column:
+                  name: id
+                  type: int(11)
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: int(11)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: store_id
+                  type: int(11)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: store_location_id
+                  type: int(11)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expected_quantity
+                  type: int(11)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+        - addForeignKeyConstraint:
+            baseColumnNames: product_id
+            baseTableName: restatement_jobs
+            constraintName: fk_product_6
+            onDelete: CASCADE
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: products
+        - addForeignKeyConstraint:
+            baseColumnNames: store_id
+            baseTableName: restatement_jobs
+            constraintName: fk_store_6
+            onDelete: CASCADE
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: stores
+        - addForeignKeyConstraint:
+            baseColumnNames: store_location_id
+            baseTableName: restatement_jobs
+            constraintName: fk_store_location_6
+            onDelete: CASCADE
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: store_locations
+        - createTable:
+            tableName: orphans
+            columns:
+              - column:
+                  name: id
+                  type: int(11)
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: int(11)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: store_id
+                  type: int(11)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: restatement_job_id
+                  type: int(11)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: int(11)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: product_id
+            baseTableName: orphans
+            constraintName: fk_product_7
+            onDelete: CASCADE
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: products
+        - addForeignKeyConstraint:
+            baseColumnNames: store_id
+            baseTableName: orphans
+            constraintName: fk_store_7
+            onDelete: CASCADE
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: stores
+        - addForeignKeyConstraint:
+            baseColumnNames: restatement_job_id
+            baseTableName: orphans
+            constraintName: fk_restatement_job_7
+            onDelete: CASCADE
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: restatement_jobs

@@ -6,6 +6,6 @@ import com.example.entity.Productinstore;
 
 @Repository
 public interface ProductinstoreRepository extends CrudRepository<Productinstore, Long> {
-	Productinstore findByProductAndStore(Long product, Long store);
+    Productinstore findByProductAndStore(Long product, Long store);
 }
 
