@@ -1,5 +1,7 @@
 package com.example.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
@@ -51,7 +53,8 @@ public class RestatementjobService {
 
         Restatementjob restatementjob = new Restatementjob();
         restatementjob.setProduct(productId);
-        restatementjob.setStore(storeId);
+        //restatementjob.setStore(storeId);
+        restatementjob.setStore(store);
         restatementjob.setStorelocation(storeLocationId);
         restatementjob.setExpectedQuantity(expectedQuantity);
         restatementjob.setStatus(Restatementjob.STATUS_NEW);
@@ -76,4 +79,13 @@ public class RestatementjobService {
 
         return restatementjob;
     }
+
+    public Iterable<Restatementjob> getAll() {
+        return restatementjobRepository.findAll();
+    }
+
+    public Restatementjob getById(Long id) {
+        return restatementjobRepository.findOne(id);
+    }
+
 }

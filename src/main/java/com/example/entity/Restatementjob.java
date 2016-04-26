@@ -4,9 +4,12 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -25,6 +28,7 @@ public class Restatementjob implements Persistable<Long> {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @JsonView(com.example.entity.Restatementjob.class)
     private Long id;
 
     @JsonView(com.example.entity.Restatementjob.class)
@@ -32,8 +36,10 @@ public class Restatementjob implements Persistable<Long> {
     private Long product;
 
     @JsonView(com.example.entity.Restatementjob.class)
-    @Column(name = "store_id")
-    private Long store;
+    //@Column(name = "store_id")
+    @ManyToOne
+    @JoinColumn(name = "store_id")
+    private Store store;
 
     @JsonView(com.example.entity.Restatementjob.class)
     @Column(name="store_location_id")
@@ -70,11 +76,11 @@ public class Restatementjob implements Persistable<Long> {
         this.product = product;
     }
 
-    public Long getStore() {
+    public Store getStore() {
         return store;
     }
 
-    public void setStore(Long store) {
+    public void setStore(Store store) {
         this.store = store;
     }
 
@@ -112,7 +118,7 @@ public class Restatementjob implements Persistable<Long> {
 
     @Override
     public String toString() {
-        return "Restatementjob [id=" + id + ", product=" + product + ", store=" + store + ", storelocation="
+        return "Restatementjob [id=" + id + ", product=" + product + ", store=" + store.getId() + ", storelocation="
                 + storelocation + ", expectedQuantity=" + expectedQuantity + ", status=" + status + ", username="
                 + username + "]";
     }

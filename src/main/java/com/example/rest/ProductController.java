@@ -1,6 +1,7 @@
 package com.example.rest;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Product;
+import com.example.entity.Productinstore;
 import com.example.entity.Productlocation;
 import com.example.entity.Store;
 import com.example.entity.Storelocation;
+import com.example.repository.ProductRepository;
 import com.example.repository.StoreRepository;
 import com.example.repository.StorelocationRepository;
 import com.example.service.ProductService;
@@ -31,6 +34,9 @@ public class ProductController {
 
     @Autowired
     private ProductlocationService productlocationService;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Autowired
     private StoreRepository storeRepository;
@@ -87,28 +93,44 @@ public class ProductController {
 
         return storelocation;
     }
-/*
+
     @RequestMapping(value = "/api/addData", method = RequestMethod.GET, produces = "application/json")
     @JsonView(com.example.entity.Storelocation.class)
     @Transactional
     public int addTestData() {
+
+        Store store = storeRepository.findByName("Branch Store #3");
 
         int newProductsCount = 10;
         int newProductsCountAdded = 0;
         Product newProduct;
         String sku;
         String name;
+        long quantity;
         ArrayList<Product> products = new ArrayList<>();
         for (int i = 0; i < newProductsCount; i++) {
             sku = "sku_" + i;
             name = "product name" + i;
             newProduct = productService.addProduct(sku, name);
-            products.add(newProduct);
+            quantity = i + 1;
+
+            HashSet<Productinstore> productinstores = new HashSet<>();
+            Productinstore productinstore = new Productinstore();
+            productinstore.setProduct(newProduct.getId());
+            productinstore.setStore(store.getId());
+            productinstore.setQuantity(quantity);
+            productinstores.add(productinstore);
+            newProduct.setProductinstores(productinstores);
+
+
+            
+            productRepository.save(newProduct);
+            //products.add(newProduct);
         }
 
-        Store store = storeRepository.findByName("Branch Store #3");
+
         int newStorelocationsCount = 10;
-        int newStorelocationsCountAdded = 0;
+
         Long shelf;
         Long slot = (long) 1;
         String barcode;
@@ -116,7 +138,7 @@ public class ProductController {
         for (int i = 0; i < newStorelocationsCount; i++) {
             shelf = (long) (i+1);
             barcode = "barcode" + store.getId() + "_" + shelf + "_" + slot;
-            Storelocation storelocation = productlocationService.addStorelocation(store, shelf, slot, barcode);
+            Storelocation storelocation = productlocationService.addStorelocation(store.getId(), shelf, slot, barcode);
             storelocationes.add(storelocation);
         }
 
@@ -124,5 +146,5 @@ public class ProductController {
         return newProductsCountAdded;
 
     }
-*/
+
 }

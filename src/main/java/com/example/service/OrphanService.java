@@ -31,7 +31,8 @@ public class OrphanService {
 
         Orphan newOrphan = new Orphan();
         newOrphan.setProduct(restatementjob.getProduct());
-        newOrphan.setStore(restatementjob.getStore());
+        //newOrphan.setStore(restatementjob.getStore());
+        newOrphan.setStore(restatementjob.getStore().getId());
         newOrphan.setRestatementjob(restatementjobId);
         newOrphan.setQuantity(quantity);
         newOrphan.setStatus(Orphan.STATUS_NEW);
