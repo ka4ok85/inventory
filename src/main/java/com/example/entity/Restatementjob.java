@@ -32,18 +32,19 @@ public class Restatementjob implements Persistable<Long> {
     private Long id;
 
     @JsonView(com.example.entity.Restatementjob.class)
-    @Column(name = "product_id")
-    private Long product;
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     @JsonView(com.example.entity.Restatementjob.class)
-    //@Column(name = "store_id")
     @ManyToOne
     @JoinColumn(name = "store_id")
     private Store store;
 
     @JsonView(com.example.entity.Restatementjob.class)
-    @Column(name="store_location_id")
-    private Long storelocation;
+    @ManyToOne
+    @JoinColumn(name = "store_location_id")
+    private Storelocation storelocation;
 
     @JsonView(com.example.entity.Restatementjob.class)
     @Column(name = "expected_quantity", nullable = false)
@@ -54,8 +55,17 @@ public class Restatementjob implements Persistable<Long> {
     private String status;
 
     @JsonView(com.example.entity.Restatementjob.class)
-    @Column(name = "username", nullable = true)
-    private String username;
+    @Column(name = "date_added", nullable = false)
+    private String dateAdded;
+
+    @JsonView(com.example.entity.Restatementjob.class)
+    @Column(name = "date_processed", nullable = false)
+    private String dateProcessed;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonView(com.example.entity.Restatementjob.class)
+    private User user;
 
     public Restatementjob() {
     }
@@ -68,11 +78,11 @@ public class Restatementjob implements Persistable<Long> {
         this.id = id;
     }
 
-    public Long getProduct() {
+    public Product getProduct() {
         return product;
     }
 
-    public void setProduct(Long product) {
+    public void setProduct(Product product) {
         this.product = product;
     }
 
@@ -84,11 +94,11 @@ public class Restatementjob implements Persistable<Long> {
         this.store = store;
     }
 
-    public Long getStorelocation() {
+    public Storelocation getStorelocation() {
         return storelocation;
     }
 
-    public void setStorelocation(Long storelocation) {
+    public void setStorelocation(Storelocation storelocation) {
         this.storelocation = storelocation;
     }
 
@@ -108,19 +118,37 @@ public class Restatementjob implements Persistable<Long> {
         this.status = status;
     }
 
-    public String getUsername() {
-        return username;
+    public String getDateAdded() {
+        return dateAdded;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setDateAdded(String dateAdded) {
+        this.dateAdded = dateAdded;
+    }
+
+    public String getDateProcessed() {
+        return dateProcessed;
+    }
+
+    public void setDateProcessed(String dateProcessed) {
+        this.dateProcessed = dateProcessed;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
     public String toString() {
         return "Restatementjob [id=" + id + ", product=" + product + ", store=" + store.getId() + ", storelocation="
-                + storelocation + ", expectedQuantity=" + expectedQuantity + ", status=" + status + ", username="
-                + username + "]";
+                + storelocation.getId() + ", expectedQuantity=" + expectedQuantity + ", status=" + status + ", user="
+                + user.getId() + ", userLogin=" + user.getLogin() 
+                + ", dateAdded=" + dateAdded
+                + ", dateProcessed=" + dateProcessed + "]";
     }
 
     @Override
@@ -142,12 +170,14 @@ public class Restatementjob implements Persistable<Long> {
                Objects.equals(expectedQuantity, that.expectedQuantity) &&
                Objects.equals(storelocation, that.storelocation) &&
                Objects.equals(status, that.status) &&
-               Objects.equals(username, that.username) &&
+               Objects.equals(user, that.user) &&
+               Objects.equals(dateAdded, that.dateAdded) &&
+               Objects.equals(dateProcessed, that.dateProcessed) &&
                Objects.equals(store, that.store);
     }
-
+    
     @Override
     public int hashCode() {
-        return Objects.hash(product, store, storelocation, expectedQuantity, status, username);
+        return Objects.hash(product, store, storelocation, expectedQuantity, status, user, dateAdded, dateProcessed);
     }
 }

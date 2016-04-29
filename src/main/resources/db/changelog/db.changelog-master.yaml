@@ -327,3 +327,75 @@ databaseChangeLog:
             onUpdate: RESTRICT
             referencedColumnNames: id
             referencedTableName: restatement_jobs
+  - changeSet:
+      id: 4
+      author: evgeny
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: int(11)
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: login
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: int(11)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            columnNames: login
+            constraintName: user_login_unique
+            tableName: users
+        - dropColumn:
+            columnName: username
+            tableName: restatement_jobs
+        - addColumn:
+            columns:
+            - column:
+                name: user_id
+                type: int(11)
+            tableName: restatement_jobs
+        - addColumn:
+            columns:
+            - column:
+                name: date_added
+                type: datetime
+            tableName: restatement_jobs
+        - addColumn:
+            columns:
+            - column:
+                name: date_processed
+                type: datetime
+            tableName: restatement_jobs
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: restatement_jobs
+            constraintName: fk_user_1
+            onDelete: CASCADE
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: users

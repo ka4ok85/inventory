@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.entity.Restatementjob;
 import com.example.service.OrphanService;
 import com.example.service.RestatementjobService;
-import com.example.wrappers.RestatementjobWrapper;
+import com.example.wrappers.RestatementjobWrapperFull;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @RestController
@@ -49,25 +49,39 @@ public class RestatementController {
     }
 
     @RequestMapping(value = "/api/getAllRestatementJobs", method = RequestMethod.GET, produces = "application/json")
-    @JsonView(com.example.wrappers.RestatementjobWrapper.class)
-    public List<RestatementjobWrapper> getAllRestatementJobs() {
-        ArrayList<RestatementjobWrapper> restatementjobList = new ArrayList<RestatementjobWrapper>(); 
+    @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
+    public List<RestatementjobWrapperFull> getAllRestatementJobs() {
+        ArrayList<RestatementjobWrapperFull> restatementjobList = new ArrayList<RestatementjobWrapperFull>(); 
 
         Iterable<Restatementjob> iterable = restatementjobService.getAll();
         for (Restatementjob restatementjob : iterable) {
             System.out.println(restatementjob);
-            RestatementjobWrapper restatementjobWrapper = new RestatementjobWrapper(restatementjob);
-        	restatementjobList.add(restatementjobWrapper);
+            RestatementjobWrapperFull restatementjobWrapper = new RestatementjobWrapperFull(restatementjob);
+            restatementjobList.add(restatementjobWrapper);
+        }
+
+        return restatementjobList;
+    }
+
+    @RequestMapping(value = "/api/getAllRestatementJobsForUser/{userId}", method = RequestMethod.GET, produces = "application/json")
+    @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
+    public List<RestatementjobWrapperFull> getAllRestatementJobsForUSer(@PathVariable("userId") Long userId) {
+        ArrayList<RestatementjobWrapperFull> restatementjobList = new ArrayList<RestatementjobWrapperFull>(); 
+
+        Iterable<Restatementjob> iterable = restatementjobService.getAll();
+        for (Restatementjob restatementjob : iterable) {
+            RestatementjobWrapperFull restatementjobWrapper = new RestatementjobWrapperFull(restatementjob);
+            restatementjobList.add(restatementjobWrapper);
         }
 
         return restatementjobList;
     }
 
     @RequestMapping(value = "/api/getRestatementJob/{id}", method = RequestMethod.GET, produces = "application/json")
-    @JsonView(com.example.wrappers.RestatementjobWrapper.class)
-    public RestatementjobWrapper getRestatementJobById(@PathVariable("id") Long id) {
+    @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
+    public RestatementjobWrapperFull getRestatementJobById(@PathVariable("id") Long id) {
         Restatementjob restatementjob = restatementjobService.getById(id);
-        RestatementjobWrapper restatementjobWrapper = new RestatementjobWrapper(restatementjob);
+        RestatementjobWrapperFull restatementjobWrapper = new RestatementjobWrapperFull(restatementjob);
 
         return restatementjobWrapper;
     }
