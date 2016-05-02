@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.entity.Restatementjob;
 import com.example.service.OrphanService;
 import com.example.service.RestatementjobService;
+import com.example.wrappers.RestatementJobWrapperUserList;
 import com.example.wrappers.RestatementjobWrapperFull;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -64,13 +65,13 @@ public class RestatementController {
     }
 
     @RequestMapping(value = "/api/getAllRestatementJobsForUser/{userId}", method = RequestMethod.GET, produces = "application/json")
-    @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
-    public List<RestatementjobWrapperFull> getAllRestatementJobsForUSer(@PathVariable("userId") Long userId) {
-        ArrayList<RestatementjobWrapperFull> restatementjobList = new ArrayList<RestatementjobWrapperFull>(); 
+    @JsonView(com.example.wrappers.RestatementJobWrapperUserList.class)
+    public List<RestatementJobWrapperUserList> getAllRestatementJobsForUSer(@PathVariable("userId") Long userId) {
+        ArrayList<RestatementJobWrapperUserList> restatementjobList = new ArrayList<RestatementJobWrapperUserList>(); 
 
         Iterable<Restatementjob> iterable = restatementjobService.getAll();
         for (Restatementjob restatementjob : iterable) {
-            RestatementjobWrapperFull restatementjobWrapper = new RestatementjobWrapperFull(restatementjob);
+            RestatementJobWrapperUserList restatementjobWrapper = new RestatementJobWrapperUserList(restatementjob);
             restatementjobList.add(restatementjobWrapper);
         }
 
