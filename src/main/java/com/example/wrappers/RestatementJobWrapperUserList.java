@@ -1,6 +1,9 @@
 package com.example.wrappers;
 
+import java.util.Date;
+
 import com.example.entity.Restatementjob;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 
 public class RestatementJobWrapperUserList {
@@ -18,16 +21,23 @@ public class RestatementJobWrapperUserList {
     private String status;
 
     @JsonView(com.example.wrappers.RestatementJobWrapperUserList.class)
-    private String dateAdded;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="UTC")
+    private Date dateAdded;
 
     @JsonView(com.example.wrappers.RestatementJobWrapperUserList.class)
-    private String dateProcessed;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="UTC")
+    private Date dateProcessed;
 
     public RestatementJobWrapperUserList(Restatementjob restatementjob) {
         this.id = restatementjob.getId();
         this.productName = restatementjob.getProduct().getName();
         this.expectedQuantity = restatementjob.getExpectedQuantity();
         this.status = restatementjob.getStatus();
+
+        //SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
+        //Date now = date.getTime();
+        //System.out.println(formatter.format(now));
+        //System.out.println(this.dateAdded);
         this.dateAdded = restatementjob.getDateAdded();
         this.dateProcessed = restatementjob.getDateProcessed();
     }
@@ -64,19 +74,19 @@ public class RestatementJobWrapperUserList {
         this.status = status;
     }
 
-    public String getDateAdded() {
+    public Date getDateAdded() {
         return dateAdded;
     }
 
-    public void setDateAdded(String dateAdded) {
+    public void setDateAdded(Date dateAdded) {
         this.dateAdded = dateAdded;
     }
 
-    public String getDateProcessed() {
+    public Date getDateProcessed() {
         return dateProcessed;
     }
 
-    public void setDateProcessed(String dateProcessed) {
+    public void setDateProcessed(Date dateProcessed) {
         this.dateProcessed = dateProcessed;
     }
 

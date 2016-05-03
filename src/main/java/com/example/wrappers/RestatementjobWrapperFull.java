@@ -1,12 +1,15 @@
 package com.example.wrappers;
 
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.example.entity.Restatementjob;
 import com.example.entity.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 
 public class RestatementjobWrapperFull {
@@ -39,10 +42,12 @@ public class RestatementjobWrapperFull {
     private String userLogin;
 
     @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
-    private String dateAdded;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="UTC")
+    private Date dateAdded;
 
     @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
-    private String dateProcessed;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="UTC")
+    private Date dateProcessed;
 
     public RestatementjobWrapperFull(Restatementjob restatementjob) {
         this.id = restatementjob.getId();
@@ -134,19 +139,19 @@ public class RestatementjobWrapperFull {
         this.userLogin = userLogin;
     }
 
-    public String getDateAdded() {
+    public Date getDateAdded() {
         return dateAdded;
     }
 
-    public void setDateAdded(String dateAdded) {
+    public void setDateAdded(Date dateAdded) {
         this.dateAdded = dateAdded;
     }
 
-    public String getDateProcessed() {
+    public Date getDateProcessed() {
         return dateProcessed;
     }
 
-    public void setDateProcessed(String dateProcessed) {
+    public void setDateProcessed(Date dateProcessed) {
         this.dateProcessed = dateProcessed;
     }
 

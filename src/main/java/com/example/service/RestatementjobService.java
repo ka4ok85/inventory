@@ -1,6 +1,8 @@
 package com.example.service;
 
 import java.util.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -58,7 +60,14 @@ public class RestatementjobService {
             throw new NotFoundException(storeLocationId.toString());
         }
 
-        String currentDateime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        Date date = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date blankDate = null;
+        //try {
+            //blankDate = dateFormat.parse("0000-00-00 00:00:00");
+        //} catch (ParseException e) {
+            //blankDate = null;
+        //}
 
         Restatementjob restatementjob = new Restatementjob();
         restatementjob.setProduct(product);
@@ -66,8 +75,8 @@ public class RestatementjobService {
         restatementjob.setStorelocation(storelocation);
         restatementjob.setExpectedQuantity(expectedQuantity);
 
-        restatementjob.setDateAdded(currentDateime);
-        restatementjob.setDateProcessed("0000-00-00 00:00:00");
+        restatementjob.setDateAdded(date);
+        restatementjob.setDateProcessed(blankDate);
         restatementjob.setStatus(Restatementjob.STATUS_NEW);
 
         restatementjobRepository.save(restatementjob);
@@ -85,8 +94,8 @@ public class RestatementjobService {
             throw new NotFoundException("Restatementjob is already completed");
         }
 
-        String currentDateime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        restatementjob.setDateProcessed(currentDateime);
+        Date date = new Date();
+        restatementjob.setDateProcessed(date);
         restatementjob.setStatus(Restatementjob.STATUS_COMPLETE);
         restatementjobRepository.save(restatementjob);
 
@@ -98,12 +107,17 @@ public class RestatementjobService {
     }
 
     public Iterable<Restatementjob> getAllByStoreAndUserId(Long storeId, Long userId) {
+        Store store = storeRepository.findOne(storeId);
+        if (store == null) {
+            throw new NotFoundException(storeId.toString());
+        }
+
         User user = userRepository.findOne(userId);
         if (user == null) {
             throw new NotFoundException(userId.toString());
         }
 
-        return restatementjobRepository.findByStoreAndUser(storeId, user);
+        return restatementjobRepository.findByStoreAndUser(store, user);
     }
 
     public Restatementjob getById(Long id) {

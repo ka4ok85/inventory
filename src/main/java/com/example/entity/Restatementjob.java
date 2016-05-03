@@ -1,5 +1,6 @@
 package com.example.entity;
 
+import java.util.Date;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -15,6 +16,7 @@ import javax.persistence.Transient;
 
 import org.springframework.data.domain.Persistable;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
@@ -56,11 +58,11 @@ public class Restatementjob implements Persistable<Long> {
 
     @JsonView(com.example.entity.Restatementjob.class)
     @Column(name = "date_added", nullable = false)
-    private String dateAdded;
+    private Date dateAdded;
 
     @JsonView(com.example.entity.Restatementjob.class)
     @Column(name = "date_processed", nullable = false)
-    private String dateProcessed;
+    private Date dateProcessed;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -118,19 +120,19 @@ public class Restatementjob implements Persistable<Long> {
         this.status = status;
     }
 
-    public String getDateAdded() {
+    public Date getDateAdded() {
         return dateAdded;
     }
 
-    public void setDateAdded(String dateAdded) {
+    public void setDateAdded(Date dateAdded) {
         this.dateAdded = dateAdded;
     }
 
-    public String getDateProcessed() {
+    public Date getDateProcessed() {
         return dateProcessed;
     }
 
-    public void setDateProcessed(String dateProcessed) {
+    public void setDateProcessed(Date dateProcessed) {
         this.dateProcessed = dateProcessed;
     }
 
