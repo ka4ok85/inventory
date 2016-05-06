@@ -1,12 +1,17 @@
 package com.example.entity;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -18,11 +23,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Table(name = "users")
 public class User implements Persistable<Long> {
 
-    public static final String STATUS_ACTIVE = "active";
-    public static final String STATUS_DISABLED = "disabled";
-
     private static final long serialVersionUID = -2245681232129182950L;
 
+    @JsonView(com.example.entity.User.class)
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
@@ -43,9 +46,9 @@ public class User implements Persistable<Long> {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @JsonView(com.example.entity.User.class)
-    @Column(name = "status", nullable = false)
-    private String status;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name="user_id")
+    private Set<Userstore> userstores = new HashSet<Userstore>();
 
     public User() {
     }
@@ -90,18 +93,18 @@ public class User implements Persistable<Long> {
         this.lastName = lastName;
     }
 
-    public String getStatus() {
-        return status;
+    public Set<Userstore> getUserstores() {
+        return userstores;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setUserstores(Set<Userstore> userstores) {
+        this.userstores = userstores;
     }
 
     @Override
     public String toString() {
         return "User [id=" + id + ", login=" + login + ", password=" + password + ", firstName=" + firstName
-               + ", lastName=" + lastName + ", status=" + status + "]";
+               + ", lastName=" + lastName +  "]";
     }
 
     @Override
@@ -122,12 +125,11 @@ public class User implements Persistable<Long> {
         return Objects.equals(login, that.login) &&
                Objects.equals(password, that.password) &&
                Objects.equals(firstName, that.firstName) &&
-               Objects.equals(lastName, that.lastName) &&
-               Objects.equals(status, that.status);
+               Objects.equals(lastName, that.lastName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(login, password, firstName, lastName, status);
+        return Objects.hash(login, password, firstName, lastName);
     }
 }

@@ -399,3 +399,56 @@ databaseChangeLog:
             onUpdate: RESTRICT
             referencedColumnNames: id
             referencedTableName: users
+  - changeSet:
+      id: 5
+      author: evgeny
+      changes:
+        - dropColumn:
+            columnName: status
+            tableName: users
+        - createTable:
+            tableName: user_in_stores
+            columns:
+              - column:
+                  name: id
+                  type: int(11)
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: int(11)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: store_id
+                  type: int(11)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: user_in_stores
+            constraintName: fk_user_w
+            onDelete: CASCADE
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: users
+        - addForeignKeyConstraint:
+            baseColumnNames: store_id
+            baseTableName: user_in_stores
+            constraintName: fk_store_8
+            onDelete: CASCADE
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: stores
+        - addUniqueConstraint:
+            columnNames: user_id, store_id
+            constraintName: user_in_store_unique
+            tableName: user_in_stores
+

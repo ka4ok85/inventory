@@ -35,6 +35,21 @@ public class RestatementController {
         return restatementjob;
     }
 
+        
+    @RequestMapping(value = "/api/addRestatementJob/", method = RequestMethod.POST, produces = "application/json")
+    //@JsonView(com.example.entity.Restatementjob.class)
+    @Transactional
+    public Boolean addRestatementJob() {
+        //Restatementjob restatementjob = restatementjobService.completeJob(restatementjobId);
+
+        //Long orphanQuantity = quantity - restatementjob.getExpectedQuantity();
+        //if (orphanQuantity != 0) {
+            //orphanService.addOrphan(restatementjobId, orphanQuantity);
+        //}
+
+        return true;
+    }
+
     @RequestMapping(value = "/api/completeRestatementJob/{restatementjobId}/{quantity}", method = RequestMethod.GET, produces = "application/json")
     @JsonView(com.example.entity.Restatementjob.class)
     @Transactional

@@ -44,6 +44,10 @@ public class Store implements Persistable<Long> {
     @JoinColumn(name="store_id")
     private Set<Storelocation> storelocationes = new HashSet<Storelocation>();
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name="store_id")
+    private Set<Userstore> userstores = new HashSet<Userstore>();
+
     public Store() {
     }
 
@@ -65,6 +69,14 @@ public class Store implements Persistable<Long> {
 
     public void setStorelocationes(Set<Storelocation> storelocationes) {
         this.storelocationes = storelocationes;
+    }
+
+    public Set<Userstore> getUserstores() {
+        return userstores;
+    }
+
+    public void setUserstores(Set<Userstore> userstores) {
+        this.userstores = userstores;
     }
 
     public String getAddress() {
