@@ -18,6 +18,9 @@ public class RestatementjobWrapperFull {
     private Long id;
 
     @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
+    private Long productId;
+
+    @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
     private String productName;
 
     @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
@@ -25,7 +28,10 @@ public class RestatementjobWrapperFull {
 
     @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
     private Long storeId;
-
+    
+    @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
+    private Long storelocationId;
+    
     @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
     private Long storelocationShelf;
 
@@ -39,6 +45,9 @@ public class RestatementjobWrapperFull {
     private String status;
 
     @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
+    private Long userId;
+
+    @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
     private String userLogin;
 
     @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
@@ -49,15 +58,22 @@ public class RestatementjobWrapperFull {
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="UTC")
     private Date dateProcessed;
 
+    public RestatementjobWrapperFull() {
+    	
+    }
+
     public RestatementjobWrapperFull(Restatementjob restatementjob) {
         this.id = restatementjob.getId();
+        this.productId = restatementjob.getProduct().getId();
         this.productName = restatementjob.getProduct().getName();
         this.storeName = restatementjob.getStore().getName();
         this.storeId = restatementjob.getStore().getId();
+        this.storelocationId = restatementjob.getStorelocation().getId();
         this.storelocationShelf = restatementjob.getStorelocation().getShelf();
         this.storelocationSlot = restatementjob.getStorelocation().getSlot();
         this.expectedQuantity = restatementjob.getExpectedQuantity();
         this.status = restatementjob.getStatus();
+        this.userId = restatementjob.getUser().getId();
         this.userLogin = restatementjob.getUser().getLogin();
         this.dateAdded = restatementjob.getDateAdded();
         this.dateProcessed = restatementjob.getDateProcessed();
@@ -71,6 +87,14 @@ public class RestatementjobWrapperFull {
         this.id = id;
     }
 
+    public Long getProductIf() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+ 
     public String getProductName() {
         return productName;
     }
@@ -99,7 +123,19 @@ public class RestatementjobWrapperFull {
         this.storeId = storeId;
     }
 
-    public Long getStorelocationShelf() {
+    public Long getStorelocationId() {
+		return storelocationId;
+	}
+
+	public void setStorelocationId(Long storelocationId) {
+		this.storelocationId = storelocationId;
+	}
+
+	public Long getProductId() {
+		return productId;
+	}
+
+	public Long getStorelocationShelf() {
         return storelocationShelf;
     }
 
@@ -131,7 +167,16 @@ public class RestatementjobWrapperFull {
         this.status = status;
     }
 
-    public String getUserLogin() {
+    
+    public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public String getUserLogin() {
         return userLogin;
     }
 
@@ -155,14 +200,14 @@ public class RestatementjobWrapperFull {
         this.dateProcessed = dateProcessed;
     }
 
-    @Override
-    public String toString() {
-        return "RestatementjobWrapper [id=" + id + ", productName=" + productName + ", storeName=" + storeName + ", storeId="
-                + storeId + ", storelocationShelf=" + storelocationShelf + ", storelocationSlot=" + storelocationSlot
-                + ", expectedQuantity=" + expectedQuantity + ", status="
-                + status + ", userLogin=" + userLogin
-                + ", dateAdded=" + dateAdded + ", dateProcessed=" + dateProcessed
-                + "]";
-    }
+	@Override
+	public String toString() {
+		return "RestatementjobWrapperFull [id=" + id + ", productId=" + productId + ", productName=" + productName
+				+ ", storeName=" + storeName + ", storeId=" + storeId + ", storelocationId=" + storelocationId
+				+ ", storelocationShelf=" + storelocationShelf + ", storelocationSlot=" + storelocationSlot
+				+ ", expectedQuantity=" + expectedQuantity + ", status=" + status + ", userId=" + userId
+				+ ", userLogin=" + userLogin + ", dateAdded=" + dateAdded + ", dateProcessed=" + dateProcessed + "]";
+	}
+
 
 }

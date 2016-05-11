@@ -21,6 +21,7 @@ import com.example.repository.RestatementjobRepository;
 import com.example.repository.StoreRepository;
 import com.example.repository.StorelocationRepository;
 import com.example.repository.UserRepository;
+import com.example.wrappers.RestatementjobWrapperFull;
 
 @ComponentScan
 @Service
@@ -63,11 +64,6 @@ public class RestatementjobService {
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date blankDate = null;
-        //try {
-            //blankDate = dateFormat.parse("0000-00-00 00:00:00");
-        //} catch (ParseException e) {
-            //blankDate = null;
-        //}
 
         Restatementjob restatementjob = new Restatementjob();
         restatementjob.setProduct(product);
@@ -123,5 +119,52 @@ public class RestatementjobService {
     public Restatementjob getById(Long id) {
         return restatementjobRepository.findOne(id);
     }
+
+	public Restatementjob addJob(RestatementjobWrapperFull restatementjobWrapperFull) {
+
+		Restatementjob restatementjob = new Restatementjob();
+		Long productId = restatementjobWrapperFull.getProductId();
+        Product product = productRepository.findOne(productId);
+        if (product == null) {
+            throw new NotFoundException(productId.toString());
+        }		
+		
+        restatementjob.setProduct(product);
+
+        Long storeId = restatementjobWrapperFull.getStoreId();
+        Store store = storeRepository.findOne(storeId);
+        if (store == null) {
+            throw new NotFoundException(storeId.toString());
+        }        
+        
+        restatementjob.setStore(store);
+
+        Long storeLocationId = restatementjobWrapperFull.getStorelocationId();
+        Storelocation storelocation = storelocationRepository.findOne(storeLocationId);
+        if (storelocation == null) {
+            throw new NotFoundException(storeLocationId.toString());
+        }        
+        
+        restatementjob.setStorelocation(storelocation);
+        restatementjob.setExpectedQuantity(restatementjobWrapperFull.getExpectedQuantity());
+
+        Date date = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date blankDate = null;
+        restatementjob.setDateAdded(date);
+        restatementjob.setDateProcessed(blankDate);
+        restatementjob.setStatus(Restatementjob.STATUS_NEW);
+
+        Long userId = restatementjobWrapperFull.getUserId();
+        User user = userRepository.findOne(userId);
+        if (user == null) {
+            throw new NotFoundException(userId.toString());
+        }
+
+        restatementjob.setUser(user);		
+		Restatementjob restatementjobAdded = restatementjobRepository.save(restatementjob);
+
+		return restatementjobAdded;
+	}
 
 }

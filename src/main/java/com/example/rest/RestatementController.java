@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,19 +36,16 @@ public class RestatementController {
         return restatementjob;
     }
 
-        
-    @RequestMapping(value = "/api/addRestatementJob/", method = RequestMethod.POST, produces = "application/json")
-    //@JsonView(com.example.entity.Restatementjob.class)
+    @RequestMapping(value = "/api/addRestatementJob/", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+    @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
     @Transactional
-    public Boolean addRestatementJob() {
-        //Restatementjob restatementjob = restatementjobService.completeJob(restatementjobId);
+    public RestatementjobWrapperFull addRestatementJob(@RequestBody RestatementjobWrapperFull restatementjobWrapperFull) {
+    	
+    	RestatementjobWrapperFull restatementjobWrapperFullAdded = new RestatementjobWrapperFull();
+     	Restatementjob restatementjobAdded = restatementjobService.addJob(restatementjobWrapperFull);
+	    restatementjobWrapperFullAdded = new RestatementjobWrapperFull(restatementjobAdded);
 
-        //Long orphanQuantity = quantity - restatementjob.getExpectedQuantity();
-        //if (orphanQuantity != 0) {
-            //orphanService.addOrphan(restatementjobId, orphanQuantity);
-        //}
-
-        return true;
+        return restatementjobWrapperFullAdded;
     }
 
     @RequestMapping(value = "/api/completeRestatementJob/{restatementjobId}/{quantity}", method = RequestMethod.GET, produces = "application/json")
