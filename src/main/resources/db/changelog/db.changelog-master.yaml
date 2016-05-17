@@ -451,4 +451,11 @@ databaseChangeLog:
             columnNames: user_id, store_id
             constraintName: user_in_store_unique
             tableName: user_in_stores
-
+  - changeSet:
+      id: 6
+      author: evgeny
+      changes:
+        - modifyDataType:
+            columnName: password
+            newDataType: varchar(255)
+            tableName: users
