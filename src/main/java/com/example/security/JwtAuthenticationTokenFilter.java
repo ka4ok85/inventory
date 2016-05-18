@@ -35,7 +35,7 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
         // authToken.startsWith("Bearer ")
         // String authToken = header.substring(7);
         String username = jwtTokenUtil.getUsernameFromToken(authToken);
-
+        System.out.println("authtoken username:" + username);
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
             if (jwtTokenUtil.validateToken(authToken, userDetails)) {

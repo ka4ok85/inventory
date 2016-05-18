@@ -1,8 +1,13 @@
 package com.example.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.impl.crypto.MacProvider;
+import java.security.Key;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,12 +32,15 @@ public class JwtTokenUtil implements Serializable {
     private static final String AUDIENCE_MOBILE = "mobile";
     private static final String AUDIENCE_TABLET = "tablet";
 
-    private String secret = "mySecret";
-
-
+    private Key secret = MacProvider.generateKey();
     private Long expiration = (long) 604800;
 
     public String getUsernameFromToken(String token) {
+        if (token == null) {
+            // fired on login form
+            return null;
+        }
+
         String username;
         try {
             final Claims claims = getClaimsFromToken(token);
@@ -40,6 +48,7 @@ public class JwtTokenUtil implements Serializable {
         } catch (Exception e) {
             username = null;
         }
+
         return username;
     }
 
@@ -78,14 +87,18 @@ public class JwtTokenUtil implements Serializable {
 
     private Claims getClaimsFromToken(String token) {
         Claims claims;
+
+        // remove "Bearer "
+        final String tokenClean = token.substring(7);
         try {
             claims = Jwts.parser()
                     .setSigningKey(secret)
-                    .parseClaimsJws(token)
+                    .parseClaimsJws(tokenClean)
                     .getBody();
         } catch (Exception e) {
             claims = null;
         }
+
         return claims;
     }
 
@@ -124,6 +137,7 @@ public class JwtTokenUtil implements Serializable {
         claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
         claims.put(CLAIM_KEY_AUDIENCE, generateAudience(device));
         claims.put(CLAIM_KEY_CREATED, new Date());
+
         return generateToken(claims);
     }
 
