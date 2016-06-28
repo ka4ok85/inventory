@@ -12,6 +12,9 @@ import com.example.entity.User;
 @Repository
 public interface UserstoreRepository extends CrudRepository<Userstore, Long> {
 
+    Userstore findByUserAndStore(User user, Store store);
+    Userstore findByUserAndStoreAndStatus(User user, Store store, String status);
+
     @Query(value = "SELECT u FROM Userstore u LEFT JOIN FETCH u.user where u.store = :store AND u.status = :status")
     Iterable<Userstore> findById(@Param("store") Store store, @Param("status") String status);
 }

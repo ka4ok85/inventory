@@ -7,7 +7,7 @@ import com.example.entity.User;
 
 @Repository
 public interface UserRepository extends CrudRepository<User, Long> {
-	User findByLogin(String login);
+    User findByLogin(String login);
 
 }
 

@@ -6,7 +6,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
+import com.example.NotFoundException;
+import com.example.entity.Store;
+import com.example.entity.Userstore;
+import com.example.repository.StoreRepository;
 import com.example.repository.UserRepository;
+import com.example.repository.UserstoreRepository;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,67 +25,76 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @Service("userDetailsService")
 public class MemberServiceImpl implements UserDetailsService {
 
+	private String storeId;
+	
 	@Autowired
     private UserRepository userRepository;
+	
+	@Autowired
+    private StoreRepository storeRepository;
+
+	@Autowired
+	private UserstoreRepository userstoreRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        com.example.entity.User user = userRepository.findByLogin(username);
-        System.out.println(username);
+    public JwtUser loadUserByUsername(String username) throws UsernameNotFoundException {
+System.out.println("MemberServiceImpl username " + username);
+System.out.println("MemberServiceImpl storeId " + storeId);
+    	com.example.entity.User user = userRepository.findByLogin(username);
+    	System.out.println("MemberServiceImpl " + user);
         if (user == null) {
-        	System.out.println("exception");
+        	System.out.println("MemberServiceImpl user is null");
             throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         } else {
-        	System.out.println(user);
-            //return JwtUserFactory.create(user);
-        	//private static List<GrantedAuthority> mapToGrantedAuthorities(List<Authority> authorities) {
+        	//System.out.println("MemberServiceImpl user is not null");
+        	System.out.println("MemberServiceImpl user is not null. storeId " + storeId);
+            //Store store = storeRepository.findOne(Long.parseLong(storeId));
+            //if (store == null) {
+//            	System.out.println("store");
+            	//throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
+            //}
+
+            //Userstore userstore = userstoreRepository.findByUserAndStoreAndStatus(user, store, "active");
+            //if (userstore == null) {
+//            	System.out.println("userstore");
+            	//throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
+            //}
+            //Set<Userstore> userStoresList = user.getUserstores();
+        	//for (Userstore userstore : userStoresList) {
+//				System.out.println("storeId" + userstore.getStore().getId());
+			//}
+        	//return JwtUserFactory.create(user);
+            //private static List<GrantedAuthority> mapToGrantedAuthorities(List<Authority> authorities) {
                 //return authorities.stream()
                         //.map(authority -> new SimpleGrantedAuthority(authority.getName().name()))
                         //.collect(Collectors.toList());
             //}
-        	//List<Authority>
-        	SimpleGrantedAuthority x = new SimpleGrantedAuthority("ROLE_USER");
-        	//SimpleGrantedAuthority x = new SimpleGrantedAuthority(username);
-        	List<GrantedAuthority> y = new ArrayList<GrantedAuthority>();
-        	y.add(x);
-        	return new JwtUser(
+            //List<Authority>
+            SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority("ROLE_USER");
+            //SimpleGrantedAuthority x = new SimpleGrantedAuthority(username);
+            List<GrantedAuthority> grantedAuthorityList = new ArrayList<GrantedAuthority>();
+            grantedAuthorityList.add(simpleGrantedAuthority);
+            return new JwtUser(
                     user.getId(),
                     user.getLogin(),
                     user.getFirstName(),
                     user.getLastName(),
                     user.getPassword(),
+                    storeId,
                     //mapToGrantedAuthorities(user.getAuthorities()),
-                    y,
+                    grantedAuthorityList,
                     true
             );
         }
-    }	
-	
-	/*
-    //@Autowired
-    //MemberRepository memberRepository;
-
-    private List<GrantedAuthority> buildUserAuthority(String role) {
-        Set<GrantedAuthority> setAuths = new HashSet<GrantedAuthority>();
-        setAuths.add(new SimpleGrantedAuthority(role));
-        List<GrantedAuthority> result = new ArrayList<GrantedAuthority>(setAuths);
-        return result;
     }
 
-    //private User buildUserForAuthentication(Object member, List<GrantedAuthority> authorities) {
-        //return new User("email123", "password123", true, true, true, true, authorities);
-    //}
+	public String getStoreId() {
+		return storeId;
+	}
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("Getting access details from employee dao !!");
- 
-        // Ideally it should be fetched from database and populated instance of
-        // #org.springframework.security.core.userdetails.User should be returned from this method
-        //UserDetails user = new User(username, "password", true, true, true, true, new GrantedAuthority[]{ new GrantedAuthorityImpl("ROLE_USER") });
-        List<GrantedAuthority> authorities = buildUserAuthority("Role");
-        return new User("email123", "$2a$04$UY.Z1wgpamPj25x.bRikmuXIjSnAdOBsCeM8oUuwOrhNEn3YpGyVC", true, true, true, true, authorities);
-        //return user;
-    }
-*/
+	public void setStoreId(String storeId) {
+		this.storeId = storeId;
+	}	
+
+    
 }

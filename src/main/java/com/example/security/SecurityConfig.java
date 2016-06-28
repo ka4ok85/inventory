@@ -1,7 +1,16 @@
 package com.example.security;
 
+import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.zookeeper.server.auth.AuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -34,10 +43,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
 
     @Autowired
-    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder
-                .userDetailsService(this.userDetailsService)
-                .passwordEncoder(passwordEncoder());
+	private AuthenticationDetailsSource<HttpServletRequest, ?> webAuthenticationDetailsSourceImpl;
+
+    @Autowired
+    private CustomUserDetailsAuthenticationProvider customAuthenticationProvider;
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(customAuthenticationProvider);
+    }    
+
+    @Bean
+    public CustomUserDetailsAuthenticationProvider myAuthProvider() throws Exception {
+    	CustomUserDetailsAuthenticationProvider provider = new CustomUserDetailsAuthenticationProvider();
+    	provider.setPasswordEncoder(passwordEncoder());
+    	provider.setUserDetailsService(userDetailsService);
+
+    	return provider; 
+    }
+
+    @Bean
+    public UsernamePasswordAuthenticationFilter usernamePasswordAuthenticationFilter() throws Exception {
+    	UsernamePasswordAuthenticationFilter usernamePasswordAuthenticationFilter  = new UsernamePasswordAuthenticationFilter();
+    	usernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManager());
+    	usernamePasswordAuthenticationFilter.setAuthenticationDetailsSource(webAuthenticationDetailsSourceImpl);
+		return usernamePasswordAuthenticationFilter;
     }
 
     @Bean
@@ -51,10 +81,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+/*
+    @Bean
+    public UsernamePasswordStoreAuthenticationFilter authenticationTokenFilterBean2() throws Exception {
+        UsernamePasswordStoreAuthenticationFilter authenticationTokenFilter = new UsernamePasswordStoreAuthenticationFilter();
+        authenticationTokenFilter.setAuthenticationManager(authenticationManagerBean());
+        authenticationTokenFilter.setAuthenticationDetailsSource(webAuthenticationDetailsSourceImpl);
+        return authenticationTokenFilter;
+    }
+*/
+    
     @Bean
     public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
         JwtAuthenticationTokenFilter authenticationTokenFilter = new JwtAuthenticationTokenFilter();
         authenticationTokenFilter.setAuthenticationManager(authenticationManagerBean());
+        //authenticationTokenFilter.setAuthenticationDetailsSource(webAuthenticationDetailsSourceImpl);
+
         return authenticationTokenFilter;
     }
 
@@ -88,44 +130,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // Custom JWT based security filter
         httpSecurity
                 .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
+                //.addFilterBefore(authenticationTokenFilterBean2(), UsernamePasswordAuthenticationFilter.class);
 
-        // disable page caching
         httpSecurity.headers().cacheControl();
     }
 }
-
-
-/*
-@Configuration
-@ComponentScan("com.example")
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Autowired
-    @Qualifier("userDetailsService")
-    UserDetailsService userDetailsService;
-
-    @Autowired
-    TokenAuthenticationManager tokenAuthenticationManager;
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .headers().frameOptions().sameOrigin()
-                .and()
-                .addFilterAfter(restTokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .authorizeRequests()
-                .antMatchers("/auth/**").permitAll()
-                .antMatchers("/api/*").authenticated();
-    }
-
-    @Bean(name = "restTokenAuthenticationFilter")
-    public TokenAuthenticationFilter restTokenAuthenticationFilter() {
-    	TokenAuthenticationFilter restTokenAuthenticationFilter = new TokenAuthenticationFilter();
-        tokenAuthenticationManager.setUserDetailsService(userDetailsService);
-        restTokenAuthenticationFilter.setAuthenticationManager(tokenAuthenticationManager);
-        return restTokenAuthenticationFilter;
-    }
-}
-*/

@@ -36,22 +36,34 @@ public class AuthenticationRestController {
     private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private MemberServiceImpl userDetailsService;
+    //private UserDetailsService userDetailsService;
 
     @RequestMapping(value = "/auth", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest, Device device) throws AuthenticationException {
-System.out.println("111");
+System.out.println("---contoller auth() 1st line");
+System.out.println(authenticationRequest.getUsername());
+System.out.println(authenticationRequest.getPassword());
+System.out.println(authenticationRequest.getStoreId());
+System.out.println("---start standard auth contoller");
         // Perform the security
         final Authentication authentication = authenticationManager.authenticate(
+
                 new UsernamePasswordAuthenticationToken(
                         authenticationRequest.getUsername(),
                         authenticationRequest.getPassword()
                 )
         );
+System.out.println("---end standard auth contoller");
+System.out.println(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 System.out.println("222");
+
         // Reload password post-security so we can generate token
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+System.out.println("cont request" + authenticationRequest);
+		userDetailsService.setStoreId(authenticationRequest.getStoreId());
+		final JwtUser userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+
         final String token = jwtTokenUtil.generateToken(userDetails, device);
 
         // Return the token
