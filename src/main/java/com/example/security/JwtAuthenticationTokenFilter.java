@@ -53,6 +53,9 @@ System.out.println("______JwtAuthenticationTokenFilter begin");
         // String authToken = header.substring(7);
         String username = jwtTokenUtil.getUsernameFromToken(authToken);
         System.out.println("authtoken username:" + username);
+        
+        String store = jwtTokenUtil.getStoreFromToken(authToken);
+        System.out.println("authtoken store:" + store);
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
             if (jwtTokenUtil.validateToken(authToken, userDetails)) {
@@ -65,6 +68,9 @@ System.out.println("______JwtAuthenticationTokenFilter chain");
 //System.out.println(request);
 //System.out.println(request.getAttribute("username"));
 //System.out.println(request.getParameter("username"));
+
+//authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
+
         chain.doFilter(request, response);
     }
 }

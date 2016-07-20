@@ -42,9 +42,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    @Autowired
-	private AuthenticationDetailsSource<HttpServletRequest, ?> webAuthenticationDetailsSourceImpl;
+    //@Autowired
+	//private AuthenticationDetailsSource<HttpServletRequest, ?> webAuthenticationDetailsSourceImpl;
 
+    @Autowired
+	private WebAuthenticationDetailsSourceImpl webAuthenticationDetailsSourceImpl;
+    
     @Autowired
     private CustomUserDetailsAuthenticationProvider customAuthenticationProvider;
 
@@ -81,7 +84,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-/*
+
     @Bean
     public UsernamePasswordStoreAuthenticationFilter authenticationTokenFilterBean2() throws Exception {
         UsernamePasswordStoreAuthenticationFilter authenticationTokenFilter = new UsernamePasswordStoreAuthenticationFilter();
@@ -89,13 +92,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         authenticationTokenFilter.setAuthenticationDetailsSource(webAuthenticationDetailsSourceImpl);
         return authenticationTokenFilter;
     }
-*/
     
     @Bean
     public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
         JwtAuthenticationTokenFilter authenticationTokenFilter = new JwtAuthenticationTokenFilter();
         authenticationTokenFilter.setAuthenticationManager(authenticationManagerBean());
-        //authenticationTokenFilter.setAuthenticationDetailsSource(webAuthenticationDetailsSourceImpl);
+        authenticationTokenFilter.setAuthenticationDetailsSource(webAuthenticationDetailsSourceImpl);
 
         return authenticationTokenFilter;
     }
@@ -103,6 +105,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+
                 // we don't need CSRF because our token is invulnerable
                 .csrf().disable()
 
@@ -122,10 +125,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/favicon.ico",
                         "/**/*.html",
                         "/**/*.css",
-                        "/**/*.js"
+                        "/**/*.js",
+                        "/api/getstores/short"
                 ).permitAll()
+
                 .antMatchers("/auth/**").permitAll()
-                .anyRequest().authenticated();
+
+                              
+
+                
+                .anyRequest().authenticated()
+                .and()  
+                .formLogin()
+                  //.loginPage("/login")
+                  //.loginProcessingUrl("/login-processing-url")
+                  //.usernameParameter("j_username")
+                  //.passwordParameter("j_password")
+                  .authenticationDetailsSource(webAuthenticationDetailsSourceImpl)
+                  //.defaultSuccessUrl("/welcome")
+                  .permitAll()
+                ;
 
         // Custom JWT based security filter
         httpSecurity

@@ -47,4 +47,12 @@ public class  JwtAuthenticationRequest implements Serializable {
     public void setStoreId(String storeId) {
         this.storeId = storeId;
     }
+
+	@Override
+	public String toString() {
+		return "JwtAuthenticationRequest [username=" + username + ", password=" + password + ", storeId=" + storeId
+				+ "]";
+	}
+    
+    
 }

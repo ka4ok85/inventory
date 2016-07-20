@@ -20,7 +20,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
 public class UsernamePasswordStoreAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
-/*
+	   @Override
+		public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+	    	System.out.println("______UsernamePasswordStoreAuthenticationFilter attemptAuthentication");
+	    	final String storeId = request.getParameter("storeId");
+	        System.out.println(storeId);
+	        System.out.println(this.authenticationDetailsSource);
+	        System.out.println(this.authenticationDetailsSource.buildDetails(request));
+	        //request.getSession().setAttribute("dbValue", storeId);
+	        System.out.println("______UsernamePasswordStoreAuthenticationFilter end");
+
+	        return super.attemptAuthentication(request, response); 
+	    }
+
+	/*
     @Autowired
     private UserDetailsService userDetailsService;
 

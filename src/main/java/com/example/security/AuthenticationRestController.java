@@ -40,26 +40,43 @@ public class AuthenticationRestController {
     //private UserDetailsService userDetailsService;
 
     @RequestMapping(value = "/auth", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest, Device device) throws AuthenticationException {
+    //@RequestMapping(value = "/auth", method = RequestMethod.GET)
+    public ResponseEntity<?> createAuthenticationToken(HttpServletRequest request, /*@RequestBody JwtAuthenticationRequest authenticationRequest,*/ Device device) throws AuthenticationException {
+    //public ResponseEntity<?> createAuthenticationToken(HttpServletRequest request, Device device) throws AuthenticationException {
 System.out.println("---contoller auth() 1st line");
-System.out.println(authenticationRequest.getUsername());
-System.out.println(authenticationRequest.getPassword());
-System.out.println(authenticationRequest.getStoreId());
+//System.out.println(authenticationRequest.getUsername());
+//System.out.println(authenticationRequest.getPassword());
+//System.out.println(authenticationRequest.getStoreId());
 System.out.println("---start standard auth contoller");
-        // Perform the security
-        final Authentication authentication = authenticationManager.authenticate(
 
-                new UsernamePasswordAuthenticationToken(
-                        authenticationRequest.getUsername(),
-                        authenticationRequest.getPassword()
-                )
+	// Perform the security
+
+WebAuthenticationDetailsSourceImpl webAuthenticationDetailsSourceImpl = new WebAuthenticationDetailsSourceImpl();
+JwtAuthenticationRequest authenticationRequest = webAuthenticationDetailsSourceImpl.buildDetails(request);
+System.out.println("---contoller jwtRequest" + authenticationRequest);
+UsernamePasswordAuthenticationToken token1 = new UsernamePasswordAuthenticationToken(
+        //authenticationRequest.getUsername(),
+        //authenticationRequest.getPassword()
+		authenticationRequest.getUsername(),
+		authenticationRequest.getPassword()
+		//"",""
+);
+token1.setDetails(authenticationRequest);
+
+		
+        Authentication authentication = authenticationManager.authenticate(
+               token1
         );
+
+        //authentication.setDetails(new WebAuthenticationDetailsSourceImpl().buildDetails(request));
 System.out.println("---end standard auth contoller");
 System.out.println(authentication);
+System.out.println(authentication.getDetails());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 System.out.println("222");
 
         // Reload password post-security so we can generate token
+//JwtAuthenticationRequest authenticationRequest = new JwtAuthenticationRequest();
 System.out.println("cont request" + authenticationRequest);
 		userDetailsService.setStoreId(authenticationRequest.getStoreId());
 		final JwtUser userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());

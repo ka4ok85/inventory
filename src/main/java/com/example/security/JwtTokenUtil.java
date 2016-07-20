@@ -86,6 +86,18 @@ public class JwtTokenUtil implements Serializable {
         return audience;
     }
 
+    public String getStoreFromToken(String token) {
+        String store;
+        try {
+            final Claims claims = getClaimsFromToken(token);
+            store = (String) claims.get(CLAIM_KEY_STORE_ID);
+        } catch (Exception e) {
+        	store = null;
+        }
+        
+        return store;
+    }
+    
     private Claims getClaimsFromToken(String token) {
         Claims claims;
 

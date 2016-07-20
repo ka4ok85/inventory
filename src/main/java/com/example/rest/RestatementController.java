@@ -77,7 +77,7 @@ public class RestatementController {
         return restatementjobList;
     }
 
-    @RequestMapping(value = "/api/getAllRestatementJobsForStoreAndUser/{storeId}/{userId}", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/api/getAllRestatementJobsForStoreAndUser/{storeId}/{userId}", method = RequestMethod.GET, produces = "application/json")
     @JsonView(com.example.wrappers.RestatementJobWrapperUserList.class)
     public List<RestatementJobWrapperUserList> getAllRestatementJobsForStoreAndUser(@PathVariable("storeId") Long storeId, @PathVariable("userId") Long userId) {
         ArrayList<RestatementJobWrapperUserList> restatementjobList = new ArrayList<RestatementJobWrapperUserList>(); 
