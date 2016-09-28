@@ -21,6 +21,7 @@ import com.example.repository.RestatementjobRepository;
 import com.example.repository.StoreRepository;
 import com.example.repository.StorelocationRepository;
 import com.example.repository.UserRepository;
+import com.example.wrappers.RestatementJobWrapperAdd;
 import com.example.wrappers.RestatementjobWrapperFull;
 
 @ComponentScan
@@ -120,6 +121,56 @@ public class RestatementjobService {
         return restatementjobRepository.findOne(id);
     }
 
+    
+    
+    
+	public Restatementjob addJob(RestatementJobWrapperAdd restatementJobWrapperAdd) {
+
+		Restatementjob restatementjob = new Restatementjob();
+		Long productId = restatementJobWrapperAdd.getProductId();
+        Product product = productRepository.findOne(productId);
+        if (product == null) {
+            throw new NotFoundException(productId.toString());
+        }		
+		
+        restatementjob.setProduct(product);
+
+        Long storeId = restatementJobWrapperAdd.getStoreId();
+        Store store = storeRepository.findOne(storeId);
+        if (store == null) {
+            throw new NotFoundException(storeId.toString());
+        }        
+        
+        restatementjob.setStore(store);
+
+        Long storeLocationId = restatementJobWrapperAdd.getStorelocationId();
+        Storelocation storelocation = storelocationRepository.findOne(storeLocationId);
+        if (storelocation == null) {
+            throw new NotFoundException(storeLocationId.toString());
+        }        
+        
+        restatementjob.setStorelocation(storelocation);
+        restatementjob.setExpectedQuantity(restatementJobWrapperAdd.getExpectedQuantity());
+
+        Date date = new Date();
+        //DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date blankDate = null;
+        restatementjob.setDateAdded(date);
+        restatementjob.setDateProcessed(blankDate);
+        restatementjob.setStatus(Restatementjob.STATUS_NEW);
+
+        Long userId = restatementJobWrapperAdd.getUserId();
+        User user = userRepository.findOne(userId);
+        if (user == null) {
+            throw new NotFoundException(userId.toString());
+        }
+
+        restatementjob.setUser(user);		
+		Restatementjob restatementjobAdded = restatementjobRepository.save(restatementjob);
+
+		return restatementjobAdded;
+	}
+    
 	public Restatementjob addJob(RestatementjobWrapperFull restatementjobWrapperFull) {
 
 		Restatementjob restatementjob = new Restatementjob();

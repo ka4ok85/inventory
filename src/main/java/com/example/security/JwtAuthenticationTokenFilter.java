@@ -48,7 +48,9 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 System.out.println("______JwtAuthenticationTokenFilter begin");
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+System.out.println(request.toString());
         String authToken = httpRequest.getHeader(this.tokenHeader);
+System.out.println(authToken);
         // authToken.startsWith("Bearer ")
         // String authToken = header.substring(7);
         String username = jwtTokenUtil.getUsernameFromToken(authToken);
@@ -56,12 +58,16 @@ System.out.println("______JwtAuthenticationTokenFilter begin");
         
         String store = jwtTokenUtil.getStoreFromToken(authToken);
         System.out.println("authtoken store:" + store);
+        System.out.println("FILTER 0 " + SecurityContextHolder.getContext().getAuthentication());
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        	System.out.println("FILTER 1");
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
             if (jwtTokenUtil.validateToken(authToken, userDetails)) {
+            	System.out.println("FILTER 2");
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println("FILTER 2 END");
             }
         }
 System.out.println("______JwtAuthenticationTokenFilter chain");

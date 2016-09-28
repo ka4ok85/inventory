@@ -27,6 +27,8 @@ public class MemberServiceImpl implements UserDetailsService {
 
 	private String storeId;
 	
+	private String storeName;
+	
 	@Autowired
     private UserRepository userRepository;
 	
@@ -38,8 +40,6 @@ public class MemberServiceImpl implements UserDetailsService {
 
     @Override
     public JwtUser loadUserByUsername(String username) throws UsernameNotFoundException {
-System.out.println("MemberServiceImpl username " + username);
-System.out.println("MemberServiceImpl storeId " + storeId);
     	com.example.entity.User user = userRepository.findByLogin(username);
     	System.out.println("MemberServiceImpl " + user);
         if (user == null) {
@@ -81,6 +81,7 @@ System.out.println("MemberServiceImpl storeId " + storeId);
                     user.getLastName(),
                     user.getPassword(),
                     storeId,
+                    storeName,
                     //mapToGrantedAuthorities(user.getAuthorities()),
                     grantedAuthorityList,
                     true
@@ -94,6 +95,14 @@ System.out.println("MemberServiceImpl storeId " + storeId);
 
 	public void setStoreId(String storeId) {
 		this.storeId = storeId;
+	}
+
+	public String getStoreName() {
+		return storeName;
+	}
+
+	public void setStoreName(String storeName) {
+		this.storeName = storeName;
 	}	
 
     

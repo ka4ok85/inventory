@@ -27,8 +27,10 @@ public class Storelocation implements Persistable<Long> {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @JsonView(com.example.entity.Storelocation.class)
     private Long id;
 
+    @JsonView(com.example.entity.Storelocation.class)
     @Column(name="store_id")
     private Long store;
 
@@ -107,11 +109,12 @@ public class Storelocation implements Persistable<Long> {
     }
 
     @Override
-    public String toString() {
-        return "Storelocation [slot=" + slot + ", shelf=" + shelf + ", barcode=" + barcode + "]";
-    }
+	public String toString() {
+		return "Storelocation [id=" + id + ", store=" + store + ", slot=" + slot + ", shelf=" + shelf + ", barcode="
+				+ barcode + "]";
+	}
 
-    @Override
+	@Override
     @Transient
     public boolean isNew() {
         return null == getId();

@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -19,8 +20,11 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 @Table(name = "products")
+@NamedQuery(name = Product.FIND_ALL_PRODUCTS_BY_STOREID_QUERY, query = "SELECT DISTINCT p " +
+	    "FROM Product p, Productinstore ps " +
+	    "WHERE p.id=ps.product and ps.store = :storeId")
 public class Product implements Persistable<Long> {
-
+	public static final String FIND_ALL_PRODUCTS_BY_STOREID_QUERY = "Product.findAllProductsInStore";
     private static final long serialVersionUID = 7019159189994722047L;
 
     @Id

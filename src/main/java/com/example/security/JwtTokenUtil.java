@@ -23,10 +23,12 @@ public class JwtTokenUtil implements Serializable {
 
     private static final long serialVersionUID = -3301605591108950415L;
 
+    private static final String CLAIM_KEY_USERID = "sub_id";
     private static final String CLAIM_KEY_USERNAME = "sub";
     private static final String CLAIM_KEY_AUDIENCE = "audience";
     private static final String CLAIM_KEY_CREATED = "created";
     private static final String CLAIM_KEY_STORE_ID = "store";
+    private static final String CLAIM_KEY_STORE_NAME = "store_name";
 
     private static final String AUDIENCE_UNKNOWN = "unknown";
     private static final String AUDIENCE_WEB = "web";
@@ -34,9 +36,10 @@ public class JwtTokenUtil implements Serializable {
     private static final String AUDIENCE_TABLET = "tablet";
 
     private Key secret = MacProvider.generateKey();
-    private Long expiration = (long) 604800;
+    private Long expiration = (long) 604800; // 7 days
 
     public String getUsernameFromToken(String token) {
+    	//System.out.println("util class. token:" + token);
         if (token == null) {
             // fired on login form
             return null;
@@ -47,6 +50,7 @@ public class JwtTokenUtil implements Serializable {
             final Claims claims = getClaimsFromToken(token);
             username = claims.getSubject();
         } catch (Exception e) {
+        	System.out.println("Error message" + e.getMessage());
             username = null;
         }
 
@@ -98,6 +102,18 @@ public class JwtTokenUtil implements Serializable {
         return store;
     }
     
+    public String getStoreNameFromToken(String token) {
+        String store;
+        try {
+            final Claims claims = getClaimsFromToken(token);
+            store = (String) claims.get(CLAIM_KEY_STORE_NAME);
+        } catch (Exception e) {
+        	store = null;
+        }
+        
+        return store;
+    }    
+
     private Claims getClaimsFromToken(String token) {
         Claims claims;
 
@@ -148,10 +164,12 @@ public class JwtTokenUtil implements Serializable {
     //public String generateToken(UserDetails userDetails, Device device) {
     public String generateToken(JwtUser userDetails, Device device) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put(CLAIM_KEY_USERID, userDetails.getId());
         claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
         claims.put(CLAIM_KEY_AUDIENCE, generateAudience(device));
-        claims.put(CLAIM_KEY_CREATED, new Date());
+        claims.put(CLAIM_KEY_CREATED, new Date().getTime()/1000);
         claims.put(CLAIM_KEY_STORE_ID, userDetails.getStoreId());
+        claims.put(CLAIM_KEY_STORE_NAME, userDetails.getStoreName());
 
         return generateToken(claims);
     }

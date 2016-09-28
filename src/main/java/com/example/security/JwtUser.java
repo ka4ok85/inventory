@@ -16,16 +16,18 @@ public class JwtUser implements UserDetails {
     private final String lastname;
     private final String password;
     private final String storeId;
+    private final String storeName;
     private final Collection<? extends GrantedAuthority> authorities;
     private final boolean enabled;
 
-    public JwtUser(Long id, String username, String firstname, String lastname, String password, String storeId, Collection<? extends GrantedAuthority> authorities, boolean enabled) {
+    public JwtUser(Long id, String username, String firstname, String lastname, String password, String storeId, String storeName, Collection<? extends GrantedAuthority> authorities, boolean enabled) {
         this.id = id;
         this.username = username;
         this.firstname = firstname;
         this.lastname = lastname;
         this.password = password;
         this.storeId = storeId;
+        this.storeName = storeName;
         this.authorities = authorities;
         this.enabled = enabled;
     }
@@ -76,6 +78,10 @@ public class JwtUser implements UserDetails {
         return storeId;
     }
 
+    public String getStoreName() {
+        return storeName;
+    }
+
 	@Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
@@ -85,4 +91,14 @@ public class JwtUser implements UserDetails {
     public boolean isEnabled() {
         return enabled;
     }
+
+	@Override
+	public String toString() {
+		return "JwtUser [id=" + id + ", username=" + username + ", firstname=" + firstname + ", lastname=" + lastname
+				+ ", password=" + password + ", storeId=" + storeId + ", storeName=" + storeName + ", authorities="
+				+ authorities + ", enabled=" + enabled + "]";
+	}
+
+
+    
 }

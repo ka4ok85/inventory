@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.entity.Restatementjob;
 import com.example.service.OrphanService;
 import com.example.service.RestatementjobService;
+import com.example.wrappers.RestatementJobWrapperAdd;
 import com.example.wrappers.RestatementJobWrapperUserList;
 import com.example.wrappers.RestatementjobWrapperFull;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -35,7 +36,7 @@ public class RestatementController {
 
         return restatementjob;
     }
-
+/*
     @RequestMapping(value = "/api/addRestatementJob/", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
     @Transactional
@@ -46,6 +47,16 @@ public class RestatementController {
 	    restatementjobWrapperFullAdded = new RestatementjobWrapperFull(restatementjobAdded);
 
         return restatementjobWrapperFullAdded;
+    }
+  */  
+    @RequestMapping(value = "/api/addRestatementJob/", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+    @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
+    @Transactional
+    public Restatementjob addRestatementJob(@RequestBody RestatementJobWrapperAdd restatementJobWrapperAdd) {
+    	System.out.println(restatementJobWrapperAdd);
+     	Restatementjob restatementjobAdded = restatementjobService.addJob(restatementJobWrapperAdd);
+
+        return restatementjobAdded;
     }
 
     @RequestMapping(value = "/api/completeRestatementJob/{restatementjobId}/{quantity}", method = RequestMethod.GET, produces = "application/json")

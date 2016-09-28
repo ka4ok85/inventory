@@ -2,6 +2,7 @@ package com.example.rest;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,12 +16,15 @@ import com.example.entity.Productinstore;
 import com.example.entity.Productlocation;
 import com.example.entity.Store;
 import com.example.entity.Storelocation;
+import com.example.entity.Userstore;
 import com.example.repository.ProductRepository;
 import com.example.repository.StoreRepository;
 import com.example.repository.StorelocationRepository;
 import com.example.service.ProductService;
 import com.example.service.ProductlocationService;
 import com.example.service.Productstore;
+import com.example.wrappers.ProductWrapperShort;
+import com.example.wrappers.UserWrapperShort;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @RestController
@@ -74,26 +78,20 @@ public class ProductController {
         return productlocation;
     }
 
-    @RequestMapping(value = "/api/test", method = RequestMethod.GET, produces = "application/json")
-    @JsonView(com.example.entity.Store.class)
-    @Transactional
-    public Store test() {
-        Store store = storeRepository.findByName("Main Store #1");
+    
+    @RequestMapping(value = "/api/getproductsbystore/{storeId}", method = RequestMethod.GET, produces = "application/json")
+    @JsonView(com.example.wrappers.ProductWrapperShort.class)
+    public List<ProductWrapperShort> getProductsByStoreId(@PathVariable("storeId") Long storeId) {
+        ArrayList<ProductWrapperShort> productList = new ArrayList<ProductWrapperShort>();
+        Iterable<Product> iterable = productService.getAllProductsByStore(storeId);
+        for (Product product : iterable) {
+            ProductWrapperShort productWrapperShort = new ProductWrapperShort(product);
+            productList.add(productWrapperShort);
+        }        
 
-        return store;
+        return productList;
     }
-
-
-    @RequestMapping(value = "/api/test2", method = RequestMethod.GET, produces = "application/json")
-    @JsonView(com.example.entity.Storelocation.class)
-    @Transactional
-    public Storelocation test2() {
-        Store store = storeRepository.findByName("Main Store #1");
-        Storelocation storelocation = storelocationRepository.findByStore(store.getId());
-
-        return storelocation;
-    }
-
+    
     @RequestMapping(value = "/api/addData", method = RequestMethod.GET, produces = "application/json")
     @JsonView(com.example.entity.Storelocation.class)
     @Transactional

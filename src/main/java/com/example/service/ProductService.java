@@ -6,7 +6,10 @@ import org.springframework.stereotype.Service;
 
 import com.example.NotFoundException;
 import com.example.entity.Product;
+import com.example.entity.Store;
+import com.example.entity.Userstore;
 import com.example.repository.ProductRepository;
+import com.example.repository.StoreRepository;
 
 @ComponentScan
 @Service
@@ -15,6 +18,9 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private StoreRepository storeRepository;
+    
     public ProductService() {
     }
 
@@ -54,5 +60,14 @@ public class ProductService {
         productRepository.save(product);
 
         return product;
+    }
+    
+    public Iterable<Product> getAllProductsByStore(Long storeId) {
+        Store store = storeRepository.findOne(storeId);
+        if (store == null) {
+            throw new NotFoundException(storeId.toString());
+        }
+
+        return productRepository.findAllProductsInStore(storeId);
     }
 }

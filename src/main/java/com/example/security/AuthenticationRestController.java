@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -16,9 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.entity.Store;
+import com.example.repository.StoreRepository;
 import com.example.security.JwtAuthenticationRequest;
 import com.example.security.JwtTokenUtil;
 import com.example.security.JwtUser;
+import com.example.service.StoreService;
 import com.example.security.JwtAuthenticationResponse;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,54 +41,50 @@ public class AuthenticationRestController {
 
     @Autowired
     private MemberServiceImpl userDetailsService;
-    //private UserDetailsService userDetailsService;
+
+    @Autowired
+    private StoreService storeService; 
 
     @RequestMapping(value = "/auth", method = RequestMethod.POST)
     //@RequestMapping(value = "/auth", method = RequestMethod.GET)
     public ResponseEntity<?> createAuthenticationToken(HttpServletRequest request, /*@RequestBody JwtAuthenticationRequest authenticationRequest,*/ Device device) throws AuthenticationException {
     //public ResponseEntity<?> createAuthenticationToken(HttpServletRequest request, Device device) throws AuthenticationException {
-System.out.println("---contoller auth() 1st line");
-//System.out.println(authenticationRequest.getUsername());
-//System.out.println(authenticationRequest.getPassword());
-//System.out.println(authenticationRequest.getStoreId());
 System.out.println("---start standard auth contoller");
 
 	// Perform the security
+		try {
+			WebAuthenticationDetailsSourceImpl webAuthenticationDetailsSourceImpl = new WebAuthenticationDetailsSourceImpl();
+			JwtAuthenticationRequest authenticationRequest = webAuthenticationDetailsSourceImpl.buildDetails(request);
+			System.out.println("---contoller jwtRequest" + authenticationRequest);
+			UsernamePasswordAuthenticationToken token1 = new UsernamePasswordAuthenticationToken(
+					authenticationRequest.getUsername(),
+					authenticationRequest.getPassword()
+					//"",""
+			);
 
-WebAuthenticationDetailsSourceImpl webAuthenticationDetailsSourceImpl = new WebAuthenticationDetailsSourceImpl();
-JwtAuthenticationRequest authenticationRequest = webAuthenticationDetailsSourceImpl.buildDetails(request);
-System.out.println("---contoller jwtRequest" + authenticationRequest);
-UsernamePasswordAuthenticationToken token1 = new UsernamePasswordAuthenticationToken(
-        //authenticationRequest.getUsername(),
-        //authenticationRequest.getPassword()
-		authenticationRequest.getUsername(),
-		authenticationRequest.getPassword()
-		//"",""
-);
-token1.setDetails(authenticationRequest);
+			token1.setDetails(authenticationRequest);
+			Authentication authentication = authenticationManager.authenticate(token1);
+			SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		
-        Authentication authentication = authenticationManager.authenticate(
-               token1
-        );
 
-        //authentication.setDetails(new WebAuthenticationDetailsSourceImpl().buildDetails(request));
-System.out.println("---end standard auth contoller");
-System.out.println(authentication);
-System.out.println(authentication.getDetails());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-System.out.println("222");
+			// Reload password post-security so we can generate token
 
-        // Reload password post-security so we can generate token
-//JwtAuthenticationRequest authenticationRequest = new JwtAuthenticationRequest();
-System.out.println("cont request" + authenticationRequest);
-		userDetailsService.setStoreId(authenticationRequest.getStoreId());
-		final JwtUser userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+			userDetailsService.setStoreId(authenticationRequest.getStoreId());
+			Store store = storeService.findStore(Long.valueOf(authenticationRequest.getStoreId()));
+			userDetailsService.setStoreName(store.getName());
+			JwtUser userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+			final String token = jwtTokenUtil.generateToken(userDetails, device);
+        
 
-        final String token = jwtTokenUtil.generateToken(userDetails, device);
-
-        // Return the token
-        return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+			// Return the token
+			return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+		} catch (BadCredentialsException e) {
+			System.out.println("BadCredentialsException");
+			JwtAuthenticationBadLoginResponse jwtAuthenticationBadLoginResponse = new JwtAuthenticationBadLoginResponse();
+			jwtAuthenticationBadLoginResponse.setMessage("Bad credentials provided");
+			System.out.println(jwtAuthenticationBadLoginResponse);
+			return ResponseEntity.ok(jwtAuthenticationBadLoginResponse);
+		}
     }
 
     @RequestMapping(value = "/refresh", method = RequestMethod.GET)
