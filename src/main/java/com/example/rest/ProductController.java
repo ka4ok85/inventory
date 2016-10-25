@@ -20,6 +20,7 @@ import com.example.entity.Userstore;
 import com.example.repository.ProductRepository;
 import com.example.repository.StoreRepository;
 import com.example.repository.StorelocationRepository;
+import com.example.security.MemberServiceImpl;
 import com.example.service.ProductService;
 import com.example.service.ProductlocationService;
 import com.example.service.Productstore;
@@ -44,6 +45,9 @@ public class ProductController {
 
     @Autowired
     private StoreRepository storeRepository;
+
+    @Autowired
+    private MemberServiceImpl userDetailsService;
 
     @Autowired
     private StorelocationRepository storelocationRepository;
@@ -79,10 +83,13 @@ public class ProductController {
     }
 
     
-    @RequestMapping(value = "/api/getproductsbystore/{storeId}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/api/getproductsbystore", method = RequestMethod.GET, produces = "application/json")
     @JsonView(com.example.wrappers.ProductWrapperShort.class)
-    public List<ProductWrapperShort> getProductsByStoreId(@PathVariable("storeId") Long storeId) {
+    public List<ProductWrapperShort> getProductsByStoreId() {
         ArrayList<ProductWrapperShort> productList = new ArrayList<ProductWrapperShort>();
+
+        Long storeId = Long.parseLong(userDetailsService.getStoreId());
+
         Iterable<Product> iterable = productService.getAllProductsByStore(storeId);
         for (Product product : iterable) {
             ProductWrapperShort productWrapperShort = new ProductWrapperShort(product);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Restatementjob;
+import com.example.security.JwtUser;
+import com.example.security.MemberServiceImpl;
 import com.example.service.OrphanService;
 import com.example.service.RestatementjobService;
 import com.example.wrappers.RestatementJobWrapperAdd;
@@ -27,6 +30,9 @@ public class RestatementController {
 
     @Autowired
     private OrphanService orphanService;
+    
+    @Autowired
+    private MemberServiceImpl userDetailsService;
 
     @RequestMapping(value = "/api/addRestatementJob/{productId}/{storeId}/{storeLocationId}/{expectedQuantity}", method = RequestMethod.GET, produces = "application/json")
     @JsonView(com.example.entity.Restatementjob.class)
@@ -53,7 +59,9 @@ public class RestatementController {
     @JsonView(com.example.wrappers.RestatementjobWrapperFull.class)
     @Transactional
     public Restatementjob addRestatementJob(@RequestBody RestatementJobWrapperAdd restatementJobWrapperAdd) {
+    	Long storeId = Long.parseLong(userDetailsService.getStoreId());
     	System.out.println(restatementJobWrapperAdd);
+    	restatementJobWrapperAdd.setStoreId(storeId);;
      	Restatementjob restatementjobAdded = restatementjobService.addJob(restatementJobWrapperAdd);
 
         return restatementjobAdded;
@@ -88,11 +96,14 @@ public class RestatementController {
         return restatementjobList;
     }
 
-    @RequestMapping(value = "/api/getAllRestatementJobsForStoreAndUser/{storeId}/{userId}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/api/getAllRestatementJobsForStoreAndUser", method = RequestMethod.GET, produces = "application/json")
     @JsonView(com.example.wrappers.RestatementJobWrapperUserList.class)
-    public List<RestatementJobWrapperUserList> getAllRestatementJobsForStoreAndUser(@PathVariable("storeId") Long storeId, @PathVariable("userId") Long userId) {
+    public List<RestatementJobWrapperUserList> getAllRestatementJobsForStoreAndUser() {
         ArrayList<RestatementJobWrapperUserList> restatementjobList = new ArrayList<RestatementJobWrapperUserList>(); 
 
+        Long storeId = Long.parseLong(userDetailsService.getStoreId());
+        Long userId = userDetailsService.getUserId();
+        
         Iterable<Restatementjob> iterable = restatementjobService.getAllByStoreAndUserId(storeId, userId);
         for (Restatementjob restatementjob : iterable) {
             RestatementJobWrapperUserList restatementjobWrapper = new RestatementJobWrapperUserList(restatementjob);

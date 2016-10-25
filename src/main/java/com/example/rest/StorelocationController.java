@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Storelocation;
+import com.example.security.MemberServiceImpl;
 import com.example.service.StorelocationService;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -18,11 +19,17 @@ public class StorelocationController {
 
     @Autowired
     private StorelocationService storelocationService;
+    
+    @Autowired
+    private MemberServiceImpl userDetailsService;
 
-    @RequestMapping(value = "/api/getstorelocationsbystore/{storeId}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/api/getstorelocationsbystore", method = RequestMethod.GET, produces = "application/json")
     @JsonView(com.example.entity.Storelocation.class)
-    public List<Storelocation> getStorelocationsByStoreId(@PathVariable("storeId") Long storeId) {
+    public List<Storelocation> getStorelocationsByStoreId() {
         ArrayList<Storelocation> storelocationList = new ArrayList<Storelocation>();
+        
+        Long storeId = Long.parseLong(userDetailsService.getStoreId());
+
         Iterable<Storelocation> iterable = storelocationService.getAllStorelocationsByStore(storeId);
         for (Storelocation storelocation : iterable) {
         	storelocationList.add(storelocation);

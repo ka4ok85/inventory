@@ -25,6 +25,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @Service("userDetailsService")
 public class MemberServiceImpl implements UserDetailsService {
 
+	private Long userId;
+	
 	private String storeId;
 	
 	private String storeName;
@@ -74,6 +76,7 @@ public class MemberServiceImpl implements UserDetailsService {
             //SimpleGrantedAuthority x = new SimpleGrantedAuthority(username);
             List<GrantedAuthority> grantedAuthorityList = new ArrayList<GrantedAuthority>();
             grantedAuthorityList.add(simpleGrantedAuthority);
+            setUserId(user.getId());
             return new JwtUser(
                     user.getId(),
                     user.getLogin(),
@@ -88,6 +91,17 @@ public class MemberServiceImpl implements UserDetailsService {
             );
         }
     }
+
+    
+	public Long getUserId() {
+		return userId;
+	}
+
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
 
 	public String getStoreId() {
 		return storeId;

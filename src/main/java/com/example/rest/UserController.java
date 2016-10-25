@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Restatementjob;
 import com.example.entity.Userstore;
+import com.example.security.MemberServiceImpl;
 import com.example.service.RestatementjobService;
 import com.example.service.UserService;
 import com.example.wrappers.RestatementJobWrapperUserList;
@@ -23,11 +24,16 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private MemberServiceImpl userDetailsService;
 
-    @RequestMapping(value = "/api/getusers/{storeId}/{status}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/api/getusers/{status}", method = RequestMethod.GET, produces = "application/json")
     @JsonView(com.example.wrappers.UserWrapperShort.class)
-    public List<UserWrapperShort> getRestatementJobById(@PathVariable("storeId") Long storeId, @PathVariable("status") String status) {
+    public List<UserWrapperShort> getRestatementJobById(@PathVariable("status") String status) {
         ArrayList<UserWrapperShort> userList = new ArrayList<UserWrapperShort>();
+        
+        Long storeId = Long.parseLong(userDetailsService.getStoreId());
 
         Iterable<Userstore> iterable = userService.getAllByStoreAndStatus(storeId, status);
         for (Userstore userstore : iterable) {

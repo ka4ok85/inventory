@@ -68,7 +68,7 @@ System.out.println("---start standard auth contoller");
 
 
 			// Reload password post-security so we can generate token
-
+			System.out.println("---standard auth contoller storeId=" + authenticationRequest.getStoreId());
 			userDetailsService.setStoreId(authenticationRequest.getStoreId());
 			Store store = storeService.findStore(Long.valueOf(authenticationRequest.getStoreId()));
 			userDetailsService.setStoreName(store.getName());
