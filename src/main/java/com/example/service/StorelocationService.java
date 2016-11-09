@@ -31,5 +31,15 @@ public class StorelocationService {
         }
 
         return storelocationRepository.findByStore(storeId);
-    }	
+    }
+    
+    
+    public Storelocation findStorelocation(Long storelocationId) {
+    	Storelocation storelocation = storelocationRepository.findOne(storelocationId);
+        if (storelocation == null) {
+            throw new NotFoundException(storelocationId.toString());
+        }
+        
+    	return storelocation;
+    }
 }

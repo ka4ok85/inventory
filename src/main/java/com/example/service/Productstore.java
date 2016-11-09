@@ -72,7 +72,8 @@ public class Productstore {
             throw new NotFoundException(productId.toString() + "-" + storeId.toString());
         } else {
             if (existedProductinstore.getQuantity() < quantity) {
-                throw new NotFoundException("Not enough " + productId.toString());
+            	System.out.println("ProductstoreService: Not enough product " + product.getName());
+                throw new RuntimeException("Not enough product " + product.getName());
             } else {
                 existedProductinstore.setQuantity(existedProductinstore.getQuantity() - quantity);
             }
@@ -81,5 +82,14 @@ public class Productstore {
         productRepository.save(product);
 
         return product;
+    }
+    
+    public Productinstore findProductinstore(Long productId, Long storeId) {
+    	Productinstore productinstore = productinstoreRepository.findByProductAndStore(productId, storeId);
+        if (productinstore == null) {
+            throw new NotFoundException(productId.toString() + '_' + storeId.toString());
+        }
+        
+    	return productinstore;
     }
 }

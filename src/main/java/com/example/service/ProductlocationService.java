@@ -102,7 +102,7 @@ public class ProductlocationService {
         return product;
     }
 
-    public Productlocation findProduct(Long productId, Long storeId) {
+    public Product addProduct(Long productId, Long storeId, Long quantity, Long locationId) {
         Product product = productRepository.findOne(productId);
         if (product == null) {
             throw new NotFoundException(productId.toString());
@@ -113,14 +113,69 @@ public class ProductlocationService {
             throw new NotFoundException(storeId.toString());
         }
 
-        Productlocation existedProductlocation = productlocationRepository.findByProductAndStore(product.getId(), store.getId());
+        Productlocation existedProductlocation = productlocationRepository.findByProductAndStorelocation(product.getId(), locationId);
+        if (existedProductlocation == null) {
+            Productlocation productlocation = new Productlocation();
+            productlocation.setProduct(product.getId());
+            productlocation.setStorelocation(locationId);
+            productlocation.setStore(store.getId());
+            productlocation.setQuantity(quantity);
+            Set<Productlocation> productlocationes = product.getProductlocationes();
+            productlocationes.add(productlocation);
+        } else {
+            existedProductlocation.setQuantity(existedProductlocation.getQuantity() + quantity);
+        }
+
+        productRepository.save(product);
+
+        return product;
+    }
+
+    public Product removeProduct(Long productId, Long storeId, Long quantity, Long locationId) {
+        Product product = productRepository.findOne(productId);
+        if (product == null) {
+            throw new NotFoundException(productId.toString());
+        }
+
+        Store store = storeRepository.findOne(storeId);
+        if (store == null) {
+            throw new NotFoundException(storeId.toString());
+        }
+
+        Productlocation existedProductlocation = productlocationRepository.findOne(locationId);
+        if (existedProductlocation == null) {
+            throw new NotFoundException("Productlocation not found: " + locationId.toString());
+        } else {
+            if (existedProductlocation.getQuantity() < quantity) {
+                System.out.println("Productlocation exception: Not enough " + productId.toString());
+            	throw new NotFoundException("Not enough " + productId.toString());
+            } else {
+            	existedProductlocation.setQuantity(existedProductlocation.getQuantity() - quantity);
+            }
+        }
+
+        productRepository.save(product);
+
+        return product;
+    }
+    
+    public Productlocation[] findProduct(Long productId, Long storeId) {
+        Product product = productRepository.findOne(productId);
+        if (product == null) {
+            throw new NotFoundException(productId.toString());
+        }
+
+        Store store = storeRepository.findOne(storeId);
+        if (store == null) {
+            throw new NotFoundException(storeId.toString());
+        }
+
+        Productlocation[] existedProductlocation = productlocationRepository.findByProductAndStore(product.getId(), store.getId());
         if (existedProductlocation == null) {
             throw new NotFoundException("There is no such product location");
         }
 
-        System.out.println(existedProductlocation);
         return existedProductlocation;
-        //Productlocation existedProductlocation = productlocationRepository.findByProductAndStorelocation(product.getId(), existedStorelocation.getId());
     }
 
     public Storelocation addStorelocation(Long store, Long shelf, Long slot, String barcode) {
@@ -134,4 +189,6 @@ public class ProductlocationService {
 
         return storelocation;
     }
+
+
 }

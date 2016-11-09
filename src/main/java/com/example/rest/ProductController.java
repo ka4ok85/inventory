@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,17 +16,24 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.entity.Product;
 import com.example.entity.Productinstore;
 import com.example.entity.Productlocation;
+import com.example.entity.Restatementjob;
 import com.example.entity.Store;
 import com.example.entity.Storelocation;
 import com.example.entity.Userstore;
 import com.example.repository.ProductRepository;
 import com.example.repository.StoreRepository;
 import com.example.repository.StorelocationRepository;
+import com.example.security.JwtAuthenticationBadLoginResponse;
 import com.example.security.MemberServiceImpl;
 import com.example.service.ProductService;
 import com.example.service.ProductlocationService;
 import com.example.service.Productstore;
+import com.example.service.StorelocationService;
+import com.example.wrappers.ProductFullInStoreWrapper;
+import com.example.wrappers.ProductLocationChangeWrapper;
 import com.example.wrappers.ProductWrapperShort;
+import com.example.wrappers.RestatementJobWrapperAdd;
+import com.example.wrappers.StorelocationQuantityWrapper;
 import com.example.wrappers.UserWrapperShort;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -39,6 +48,9 @@ public class ProductController {
 
     @Autowired
     private ProductlocationService productlocationService;
+
+    @Autowired
+    private StorelocationService storelocationService;
 
     @Autowired
     private ProductRepository productRepository;
@@ -73,11 +85,43 @@ public class ProductController {
         return productAddedToStore;
     }
 
+    @RequestMapping(value = "/api/addProductToLocation", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+    @Transactional
+    public Boolean addProductToLocation(@RequestBody ProductLocationChangeWrapper productLocationChangeWrapper) {
+    	Long storeId = Long.parseLong(userDetailsService.getStoreId());
+        productstore.scanProduct(productLocationChangeWrapper.getProductId(), storeId, productLocationChangeWrapper.getQuantity());
+        productService.scanProduct(productLocationChangeWrapper.getProductId(), productLocationChangeWrapper.getQuantity());
+        productlocationService.addProduct(productLocationChangeWrapper.getProductId(), storeId, productLocationChangeWrapper.getQuantity(), productLocationChangeWrapper.getLocationId());
+     	
+        return true;
+    }
+
+    @RequestMapping(value = "/api/removeProductFromLocation", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+    @Transactional
+    public Object removeProductFromLocation(@RequestBody ProductLocationChangeWrapper productLocationChangeWrapper) {
+    	Long storeId = Long.parseLong(userDetailsService.getStoreId());
+        
+    	try {
+        	productstore.sellProduct(productLocationChangeWrapper.getProductId(), storeId, productLocationChangeWrapper.getQuantity());
+            productService.sellProduct(productLocationChangeWrapper.getProductId(), productLocationChangeWrapper.getQuantity());
+            productlocationService.removeProduct(productLocationChangeWrapper.getProductId(), storeId, productLocationChangeWrapper.getQuantity(), productLocationChangeWrapper.getLocationId());
+         	
+            return true;			
+		} catch (Exception e) {
+			// should be generic message class
+			JwtAuthenticationBadLoginResponse jwtAuthenticationBadLoginResponse = new JwtAuthenticationBadLoginResponse();
+			jwtAuthenticationBadLoginResponse.setMessage(e.getMessage());
+			System.out.println(jwtAuthenticationBadLoginResponse);
+			return ResponseEntity.ok(jwtAuthenticationBadLoginResponse);
+		}
+
+    }
+    
     @RequestMapping(value = "/api/findProductLocation/{productId}/{storeId}", method = RequestMethod.GET, produces = "application/json")
     @JsonView(com.example.entity.Productlocation.class)
     @Transactional
-    public Productlocation findProductLocation(@PathVariable("productId") Long productId, @PathVariable("storeId") Long storeId) {
-        Productlocation productlocation = productlocationService.findProduct(productId, storeId);
+    public Productlocation[] findProductLocation(@PathVariable("productId") Long productId, @PathVariable("storeId") Long storeId) {
+        Productlocation[] productlocation = productlocationService.findProduct(productId, storeId);
 
         return productlocation;
     }
@@ -98,6 +142,38 @@ public class ProductController {
 
         return productList;
     }
+    
+    @RequestMapping(value = "/api/getProductDetails/{productId}", method = RequestMethod.GET, produces = "application/json")
+    public ProductFullInStoreWrapper getProductDetails(@PathVariable("productId") Long productId) {
+    	Long storeId = Long.parseLong(userDetailsService.getStoreId());
+
+    	Product product = productService.findProduct(productId);
+    	Productinstore productinstore = productstore.findProductinstore(productId, storeId);
+    	Productlocation[] productlocations = productlocationService.findProduct(productId, storeId);
+    	
+    	ProductFullInStoreWrapper productFullInStoreWrapper = new ProductFullInStoreWrapper();
+    	productFullInStoreWrapper.setProduct(new ProductWrapperShort(product));
+    	productFullInStoreWrapper.setTotalQuantity(productinstore.getQuantity());
+    	
+    	ArrayList<StorelocationQuantityWrapper> storelocationQuantityWrappers = new ArrayList<StorelocationQuantityWrapper>();
+    	StorelocationQuantityWrapper storelocationQuantityWrapper;
+    	Storelocation storelocation;
+    	for (Productlocation productlocation : productlocations) {
+        	System.out.println(productlocation.getQuantity());
+        	System.out.println(productlocation.getStorelocation());
+        	storelocationQuantityWrapper = new StorelocationQuantityWrapper();
+        	storelocationQuantityWrapper.setQuantity(productlocation.getQuantity());
+        	// should be changed to single query instead of loop
+        	storelocation = storelocationService.findStorelocation(productlocation.getStorelocation());
+        	storelocationQuantityWrapper.setStorelocation(storelocation);
+        	storelocationQuantityWrappers.add(storelocationQuantityWrapper);
+		}
+    	
+    	productFullInStoreWrapper.setStorelocationQuantityWrappers(storelocationQuantityWrappers);
+
+    	return productFullInStoreWrapper;
+    }
+    
     
     @RequestMapping(value = "/api/addData", method = RequestMethod.GET, produces = "application/json")
     @JsonView(com.example.entity.Storelocation.class)

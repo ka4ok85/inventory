@@ -43,6 +43,7 @@ public class ProductService {
         }
 
         if ((product.getQuantity() - quantity) < 0) {
+        	System.out.println("ProductService: Can not sell " + quantity + " items");
             throw new NotFoundException("Can not sell " + quantity + " items");
         }
 
@@ -69,5 +70,14 @@ public class ProductService {
         }
 
         return productRepository.findAllProductsInStore(storeId);
+    }
+    
+    public Product findProduct(Long productId) {
+        Product product = productRepository.findOne(productId);
+        if (product == null) {
+            throw new NotFoundException(productId.toString());
+        }
+        
+    	return product;
     }
 }
